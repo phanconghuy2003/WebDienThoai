@@ -1,0 +1,643 @@
+﻿@using bandienthoai.Areas.Admin.Models
+@model List<ProductViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var chedoview = ViewBag.ChedoView;
+}
+
+@section Header{
+    <h2 class="no-margin-bottom text-info ">Quản Lý Đơn Hàng</h2>
+    <div class="page-button ml-auto">
+
+       
+
+        <a href="#" id="btnInDon" class="btn btn-outline-warning"><i class="fas fa-print"></i> In Đơn Hàng</a>
+        <a href="#" id="btnNhapHang" class="btn btn-outline-primary"><i class="far fa-envelope"></i>Nhập hàng</a>
+
+        <a href="#" id="btnChuaThanhToan" class="btn btn-outline-success"><i class="fas fa-credit-card"></i> Chưa Thanh Toán</a>
+        <a href="#" id="btnDelete" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Xóa</a>
+        <a href="/Admin/Home/Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Trở Về</a>
+    </div>
+}
+
+<div class="input-group-box">
+
+    
+    @using (Html.BeginForm("Index", "DonHang", FormMethod.Get))
+    {
+    <div class="container">
+        @if (chedoview == true)
+        {
+            <div class="input-group"><input type="checkbox" id="chkXem" /><span class="text-danger">Xem tất cả</span></div>
+        }
+        else
+        {
+            <div class="input-group"><input type="checkbox" id="chkXem" checked/><span class="text-danger">Xem tất cả</span></div>
+        }
+
+        <div class="row">
+
+
+
+            <div class="col col-4">
+                <div class="input-item" style="display:none">
+                    <div class="form-group">
+                        <p>Tìm kiếm</p>
+
+                        <input class="form-control" type="text" id="txtSearch" placeholder="Tìm kiếm" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+        <div class="page-table">
+            <div class="container-fluid">
+                <table id="customer_data" class="table table-striped table-bordered">
+                    <thead id="list-header">
+                        <tr>
+                            <th><input type="checkbox" id="checkall" /></th>
+                            <th scope="col">STT</th>
+
+                            <th scope="col">Số Hóa Đơn</th>
+
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Nhà cung cấp</th>
+                            <th scope="col">Loại sản phẩm</th>
+                            <th scope="col">Số lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            <tr id="row_@item.Id" class="Search">
+                                <td><input type="checkbox" value="@item.Id" class="record" /></td>
+                                <td><p></p></td>
+                                <td><p>@item.Id</p></td>
+                                <td class="SearchName"><p>@item.Name</p></td>
+
+
+                                <td><p>@item.NameNCC</p></td>
+                                <td><p>@item.NameTypeProduct</p></td>
+                                <td><p>@item.SoLuong</p></td>
+
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+        @*Create A Popup Modal With Registration Form For delete Record*@
+        <div class="modal fade" id="DeleteConfim">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="ModalTitle"></h4>
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                    </div>
+                    <div class="modal-body">
+                        <h4>Bạn Có Chắc Muốn xóa?</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i></a>
+                        <a href="#" class="btn btn-danger" id="btnxacnhan"><i class="fas fa-check"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="DetailOrder">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="ModalTitle">Thông tin phiêu nhập</h4>
+
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                    </div>
+                    <div class="modal-body">
+
+                       @* <h4>Số đơn phiếu nhập được tạo là: @ViewBag.countBill</h4>*@
+                        <table id="Bill_Nhap">
+                            <thead>
+                                <tr>
+
+
+                                    <th width="300px">Tên sản phẩm</th>
+                                    <th width="300px">Loại sản phẩm</th>
+                                    <th width="300px">Nhà cung cấp</th>
+                                    <th width="300px">Số lượng tồn</th>
+
+
+                                    <th width="300px">Số lượng nhập</th>
+                                    <th width="300px">Đơn giá/sản phẩm</th>
+                                </tr>
+                            </thead>
+                            <tbody id="setTkList"></tbody>
+                        </table>
+                        <p>Thành tiền:<span id="TotalPrice" class="text-danger text-bold"></span></p>
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <a href="#" class="btn btn-success" id="btninsert" data-dismiss="modal"><i class="fas fa-save"></i>Tạo phiếu nhập & In</a>
+                        <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i>Hủy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+           
+
+            $('#chkXem').off('click').on('click', function () {
+                
+                if ($('#chkXem').is(":checked")) {
+                    window.location.href = "/Admin/NhapHang/Index?all=" + false;
+                }
+                else
+                  window.location.href = "/Admin/NhapHang/Index?all="+true;
+            });
+
+            var t = $('#customer_data').DataTable({
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[1, 'asc']],
+                "language": {
+
+                    "sSearch": "Tìm kiếm:",
+                    "sEmptyTable": "Không có dữ liệu trong bảng",
+                    "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty": "Hiển thị 0 tới 0 của 0 Phần tử",
+                    "sInfoFiltered": "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ",",
+                    "sLengthMenu": "Hiển thị _MENU_ Phần tử",
+                    "sLoadingRecords": "Loading...",
+                    "sProcessing": "Processing...",
+                    "sZeroRecords": "No matching records found",
+                    "oPaginate": {
+                        "sFirst": "Trang đầu",
+                        "sLast": "Trang cuối",
+                        "sNext": "Trang sau",
+                        "sPrevious": "Trang trước"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": activate to sort column ascending",
+                        "sSortDescending": ": activate to sort column descending"
+                    }
+                }
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(1, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+            $("#list-header").css("background-color", "lightblue");
+            $("#list-header").on({
+                mouseenter: function () {
+                    $(this).css("background-color", "lightgray");
+                },
+                mouseleave: function () {
+                    $(this).css("background-color", "lightblue");
+                }
+            });
+
+        });
+    </script>
+
+    <script>
+        function nhap() {
+            var listnhap = [];
+            i = 0;
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        listnhap[i] = this.value;
+                        i++;
+                    }
+                }
+
+            });}
+        var cart = {
+            init: function () {
+                cart.regEvents();
+            },
+            regEvents: function () {
+               
+                $('#btnNhapHang').off('click').on('click', function () {
+                  
+                    var listnhap = [];
+                    i = 0;
+                    $("#customer_data tbody input[class='record']").each(function () {
+                        if ($(this) != null) {
+
+                            if ($(this).is(":checked")) {
+                                
+                                listnhap[i] = this.value;
+                                i++;
+                            }
+                        }
+                      
+                    });
+                 
+     
+                
+                    $.ajax({
+                        url: '/Nhaphang/HoaDonNhap',
+                        data: { list: JSON.stringify(listnhap) },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                listnhap = res.list;
+        $("#ModalTitle").text("Thông tin sản phẩm");
+
+                                DataBind(listnhap)
+
+        $("#DetailOrder").modal("show");
+                               
+                            }
+                        },
+                    });
+                });
+
+          
+               
+            }
+        }
+        cart.init();
+    </script>
+    @* Get detail *@
+    <script>
+        function DataBind(TkList) {
+            var total = 0;
+            $("#setTkList").empty();
+            var setData = $("#setTkList");
+            for (var i = 0; i < TkList.length; i++) {
+                total += (TkList[i].Price * TkList[i].Quantity) - ((TkList[i].Price * TkList[i].Quantity) * TkList[i].Promotion / 100);
+                var data = "<tr id='" + TkList[i].Id + "'>" +
+
+                   
+                    "<td data-id='" + TkList[i].Name + "'>" + TkList[i].Name+ "</td>" +
+                    "<td data-id='" + TkList[i].NameTypeProduct + "'>" + TkList[i].NameTypeProduct + "</td>" +
+                    "<td data-id='" + TkList[i].IdNCC + "'>" + TkList[i].NameNCC + "</td>" +
+                    "<td data-id='" + TkList[i].SoLuong + "'>" + TkList[i].SoLuong + "</td>" +
+                   
+                    "<td> <input class='quality form-control' type='number'/></td>" +
+                  
+                    "<td> <input class='Price form-control' type='number' /></td>" +
+                   
+                    
+                   
+                    
+                    "</tr>";
+                setData.append(data);
+
+            }
+
+            $("#TotalPrice").text(+total + " VNĐ");
+        }
+        function DetailOrder(id, name, sdt, email, addres) {
+            $("#infoName").text(name);
+            $("#infoID").text(id);
+            $("#infoSdt").text(sdt);
+            $("#infoEmail").text(email);
+            $("#infoDiaChi").text(addres);
+
+            $.ajax({
+                url: 'DetailOrder',
+                data: { id: id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+
+                    $("#ModalTitle").text("Thông tin sản phẩm");
+
+                    DataBind(res);
+
+                    $("#DetailOrder").modal("show");
+
+
+                }
+            });
+        }
+    </script>
+    <script>
+        
+        var cart = {
+            init: function () {
+                cart.regEvents();
+            },
+            regEvents: function () {
+              
+                $('#btninsert').off('click').on('click', function () {
+                    var table, tr, td1, td2, td3,td4, i;
+                    var list = [];
+                    table = document.getElementById("Bill_Nhap");
+
+                    tr = table.getElementsByTagName("tr");
+                    for (i = 1; i < tr.length; i++) {
+                        td1 = tr[i].getAttribute("id");
+                      
+                        td2 = tr[i].getElementsByClassName("quality")[0].value;
+                        td3 = tr[i].getElementsByTagName("td")[2].getAttribute("data-id");
+                        td4 = tr[i].getElementsByClassName("Price")[0].value;
+                        list.push({
+                            Id: td1,
+                            SoLuong: td2,
+                            IdNCC: td3,
+                            Price:td4,
+                        });
+                    }
+                    $.ajax({
+                        url: '/Nhaphang/InsertBill',
+                        data: { list: JSON.stringify(list) },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                listnhap = res.list;
+                                alert("Thành công!");
+
+                             
+
+                                
+
+                            }
+                        },
+                    });
+                });
+
+
+
+            }
+        }
+        cart.init();
+
+    </script>
+    <script>
+        $("#btnThanhToan").click(function () {
+            changeThanhToan("ThanhToan?id=");
+        });
+        $("#btnChuaThanhToan").click(function () {
+            changeThanhToan("ChuaThanhToan?id=");
+        });
+
+        function changeThanhToan(url) {
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: url + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == true) {
+                                    $("#tt_" + x).text("Đã thanh toán");
+
+                                }
+
+
+                                else {
+                                    $("#tt_" + x).text("Chưa thanh toán");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#TRANGTHAI").change(function () {
+                fillerByStatus()
+            });
+
+
+        });
+    </script>
+    @*check an hien*@
+    <script>
+        $(document).ready(function () {
+            $("#ModalTitle").text("Xóa");
+            //$("#IDLOAITAIKHOAN").change(function () {
+
+            //    fillerBytypeUser()
+            //});
+
+        });
+        //set check all
+        $("#checkall").click(function () {
+
+            $("#customer_data tbody").find('input[class="record"]').each(function () {
+
+                if ($("#checkall").is(":checked")) {
+
+                    $(this).prop('checked', true);
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                }
+            });
+        });
+
+        $("#btngiaohang").click(function () {
+            changeDuyet("ChangeDaDuyet?id=");
+        });
+        //set chờ duyệt
+        $("#btnDaDuyet").click(function () {
+            changeDuyet("ChangeDaDuyet?id=");
+        });
+        $("#btnChoDuyet").click(function () {
+
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                  
+                        $.ajax({
+                            url: "ChangeChoDuyet?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response != -1) {
+
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i> Chờ duyệt");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+        });
+
+
+
+        //change duyet
+        function changeDuyet(url) {
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: url + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == 5) {
+                                    $("#hd_" + x).html("<i class='fas fa-credit-card'></i> Đang giao");
+
+                                }
+                                else if (response == 2)
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i>Đã duyệt");
+
+                                else {
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i> Chờ duyệt");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+    </script>
+    <script>
+        //inhoadon
+        $("#btnInDon").click(function () {
+            var kq = true;
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: "Export?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+                                if (response.status) {
+                                    kq = response.status;
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+            if (kq == true) {
+                alert("In hóa đơn thành công!");;
+            }
+            else {
+                alert("In hóa đơn không thành công!");
+            }
+        });
+
+    </script>
+    <script type="text/javascript">
+
+        //delete fonfim
+        $("#btnDelete").click(function () {
+
+            deletetable();
+
+        });
+        //delete table
+
+        function deletetable() {
+            var kq = false;
+            $("#customer_data tbody").find('input[class="record"]').each(function () {
+                if ($(this) != null) {
+
+
+                    if ($(this).is(":checked")) {
+                        var tmp = $(this);
+                        var va = this.value;
+
+                        $("#DeleteConfim").modal("show");
+                        $("#btnxacnhan").click(function () {
+                            $("#DeleteConfim").modal("hide");
+                            $.ajax({
+                                url: "Delete?id=" + va,
+                                dataType: "json",
+                                type: "POST",
+                                success: function (response) {
+                                    kq = response.status;
+
+                                }
+                            });
+                            $(tmp).parents("tr").remove();
+                        });
+                    }
+
+                }
+
+
+            });
+
+        }
+
+    </script>
+}
+

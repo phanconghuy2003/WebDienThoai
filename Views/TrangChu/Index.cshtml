@@ -1,0 +1,455 @@
+﻿@using bandienthoai.Models.EF
+@model List<SANPHAM>
+@{
+    ViewBag.Title = "Trang Chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var slides = (List<bandienthoai.Models.EF.SLIDE>)ViewBag.Banner;
+    var ListNewProducts = (List<bandienthoai.Models.EF.SANPHAM>)ViewBag.NewProducts;
+    var ListPromotion = (List<bandienthoai.Models.EF.SANPHAM>)ViewBag.KhuyenMais;
+    // var ListNews = (List<bandienthoai.Models.ProductViewModel>)ViewBag.ListKhuyenMai;
+    var Sort = (List<bandienthoai.Models.EF.SANPHAM>)ViewBag.Sort;
+}
+
+@section Banner_Giua{
+    <div class="slider-top">
+        <div id='bannerTop' class='owl-carousel owl-theme'>
+            @foreach (var item in slides)
+            {
+                var link = item.LINK != null ? item.LINK : "#";
+                var image = item.IMAGE != null ? item.IMAGE : "";
+                <div class='item'>
+                    <a href='@link'> <img alt="@item.GHICHU" src='@image' /> </a>
+                </div>
+            }
+        </div>
+    </div>
+
+}
+
+
+<div class="content">
+    @*giảm giá*@
+
+
+    <div class="session group">
+        <div class=" col-right">
+            <div class="main detail-product">
+                <div class="detail-product slideItem">
+                    <div class="khuyenmai ">
+
+                        <div class="row">
+                            <div class="module-header">
+                                <div class="box-title row" style="    background: #f5f5f5;">
+                                    <div class="col-md-6 col-12">
+                                        <h2 class="title-head">Sản phẩm khuyến mãi</h2>
+                                        <div class="clearBoth"></div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="count-down" id="count-down-container" style="display:none">
+                                            <div class="count-down-value"><span id="days">-28</span>ngày</div>
+                                            <div class="count-down-value"><span id="hours">12</span>giờ</div>
+                                            <div class="count-down-value"><span id="minutes">58</span>phút</div>
+                                            <div class="count-down-value"><span id="seconds">31</span>giây</div>
+                                        </div>
+                                    </div>
+                                    <div class="sort-options">
+                                        <label>Sắp xếp theo:</label>
+                                        <select id="sort-select">
+                                            <option value="asc">Giá tăng dần</option>
+                                            <option value="desc">Giá giảm dần</option>
+                                        </select>
+                                        <button onclick="sortProducts()">Sắp xếp</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="owl-carousel owl-theme">
+                                @foreach (var item in ListPromotion)
+                                {
+                                    var url = "/chi-tiet/" + "-" + item.GHICHU_SANPHAM + "-" + item.SANPHAM_ID;
+                                    <div class="item">
+                                        <div class="product-item-box">
+                                            <div class="product-item">
+                                                <a class="product-image" href="@url" title="Chevrolet ">
+                                                    <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  "
+                                                         alt="@item.TEN_SANPHAM ">
+                                                    <noscript>
+                                                        <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  " alt="@item.TEN_SANPHAM  " />
+                                                    </noscript>
+
+                                                </a>
+
+                                                <div class="product-info has-menu-dots">
+                                                    <div class="info-left">
+                                                        <h2 class="product-title">
+                                                            <a href="@url" title="note 9">@item.TEN_SANPHAM</a>
+                                                        </h2>
+                                                    </div>
+                                                    <div class="info-right d-flex flex-column">
+                                                        <div class=" price">
+
+                                                            <span class="price-value"> @(item.GIA_SANPHAM != 0 ? (item.GIA_SANPHAM - item.GIA_SANPHAM * item.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")</span>
+                                                            <span class="price-old"> @(item.GIA_SANPHAM != 0 ? item.GIA_SANPHAM.ToString("N0") + " VNĐ" : "") </span>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="info-bottom">
+                                                        <div class="view">
+                                                            <span><i class="fa fa-eye" aria-hidden="true"></i></span>
+                                                            <span> @item.LUOTXEM lượt</span>
+                                                        </div>
+                                                    </div>
+                                                    <a class="btn btn-cart" href="/them-gio-hang?ProductId=@item.SANPHAM_ID&quantity=1" title="Thêm giỏ hàng">
+                                                        <i class="fa fa-cart-plus"></i>
+                                                        <span>Thêm giỏ hàng</span>
+                                                    </a>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="d-flex justify-content-center w-100  m-3">
+                                <a class="btn btn-view-more btn-icon-right" href="/khuyen-mai" title="Xem tất cả">
+                                    Xem tất cả
+                                    <span>
+                                        <i class="fa fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    @*SP mới*@
+    <div class="session group">
+        <div class=" col-right">
+            <div class="main detail-product">
+                <div class="detail-product slideItem">
+                    <div class="newproduct ">
+
+                        <div class="row">
+                            <div class="module-header">
+                                <div class="box-title">
+                                    <h2 class="title-head">Sản phẩm mới</h2>
+
+                                </div>
+                            </div>
+
+                            <div class="owl-carousel owl-theme">
+                                @foreach (var item in ListNewProducts)
+                                {
+                                    var url = "/chi-tiet/" + "-" + item.GHICHU_SANPHAM + "-" + item.SANPHAM_ID;
+                                    <div class="item">
+                                        <div class="product-item-box">
+                                            <div class="product-item">
+                                                <a class="product-image" href="@url" title="Chevrolet ">
+                                                    <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  "
+                                                         alt="@item.TEN_SANPHAM ">
+                                                    <noscript>
+                                                        <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  " alt="@item.TEN_SANPHAM  " />
+                                                    </noscript>
+
+                                                </a>
+
+                                                <div class="product-info has-menu-dots">
+                                                    <div class="info-left">
+                                                        <h2 class="product-title">
+                                                            <a href="@url" title="note 9">@item.TEN_SANPHAM</a>
+                                                        </h2>
+                                                    </div>
+                                                    <div class="info-right d-flex flex-column">
+                                                        <div class=" price">
+
+                                                            <span class="price-value"> @(item.GIA_SANPHAM != 0 ? (item.GIA_SANPHAM - item.GIA_SANPHAM * item.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")</span>
+                                                            <span class="price-old"> @(item.GIA_SANPHAM != 0 ? item.GIA_SANPHAM.ToString("N0") + " VNĐ" : "") </span>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="info-bottom">
+                                                        <div class="view">
+                                                            <span><i class="fa fa-eye" aria-hidden="true"></i></span>
+                                                            <span> @item.LUOTXEM lượt</span>
+                                                        </div>
+                                                    </div>
+                                                    <a class="btn btn-cart" href="/them-gio-hang?ProductId=@item.SANPHAM_ID&quantity=1" title="Thêm giỏ hàng">
+                                                        <i class="fa fa-cart-plus"></i>
+                                                        <span>Thêm giỏ hàng</span>
+                                                    </a>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="d-flex justify-content-center w-100  m-3">
+                                <a class="btn btn-view-more btn-icon-right" href="/tat-ca-san-pham" title="Xem tất cả">
+                                    Xem tất cả
+                                    <span>
+                                        <i class="fa fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
+
+@section js{
+    <script>
+        $('#bannerTop.owl-carousel').owlCarousel({
+            loop: true,
+            margin: 10,
+            nav: true,
+
+            autoplay: true,
+            items: 1,
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
+
+        });
+        function AddNew(Id) {
+            $("#form")[0].reset();
+            $("#IdNSX").val(0);
+
+            $("#ModalTitle").html("Thêm mới");
+            $("#MyModal").modal();
+
+        }
+        //Show The Popup Modal For Edit Student Record
+
+
+        function EditRecord(Id) {
+            var url = "/NhaSanXuat/GetListNSXByID?id=" + Id;
+            $("#ModalTitle").html("Chỉnh sửa");
+            $("#MyModal").modal("show");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (data) {
+                    var obj = JSON.parse(data);
+
+                    $("#IdNSX").val(obj.ID_NSX);
+                    $("#MaNSX").val(obj.MANSX);
+                    $("#TenNSX").val(obj.TEN_NSX);
+                    $("#Ghichu").val(obj.GHICHU_NSX);
+                    $("#SDT").val(obj.SDT_NSX);
+                    $("#Mota").val(obj.MOTA_NSX);
+                    $("#Diachi").val(obj.DIACHI_NSX);
+                }
+            })
+
+        }
+        $("#SaveRecord").click(function () {
+
+            var data = $("#SubmitForm").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "/NhaSanXuat/SaveData",
+                data: data,
+                success: function (data) {
+                    $("#MyModal").modal("hide");
+                    window.location.href = "/Admin/NhaSanXuat/Index";
+                    //if (data == 1) {
+                    //    alert("Cập nhật thành công!");
+                    //}
+                    //else if (data == 1) {
+                    //    alert("Thêm thành công!");
+                    //}
+                    //else {
+                    //    alert("Thất bại!");
+                    //}
+
+
+
+                }
+            })
+
+
+        });
+        //delete
+        function DeleteRecord(id) {
+            $("#IdNSX").val(id);
+            $("#DeleteConfim").modal("show");
+        }
+        function ConfirmDelete() {
+            var IdNSX = $("#IdNSX").val();
+            $.ajax({
+                type: "POST",
+                url: "/NhaSanXuat/Delete?id=" + IdNSX,
+
+                success: function (value) {
+                    if (value) {
+                        $("#DeleteConfim").modal("hide");
+                        $(".row_" + IdNSX).remove();
+                        $(".alert").html("Xóa thành công!");
+                        $(".alert").classList.add("show");
+
+
+                    }
+                    else {
+                        $("#DeleteConfim").modal("hide");
+                        $(".alert").html("Xóa thất bại!");
+                        $(".alert").classList.add("show");
+
+
+                    }
+
+                }
+            })
+        }
+
+    </script>
+    <script>
+
+    </script>
+    <script>
+        $('.slideItem .owl-carousel').owlCarousel({
+            loop: true,
+            margin: 10,
+            nav: true,
+
+            autoplay: true,
+
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
+            responsive: {
+                0: {
+                    items: 2
+                },
+                600: {
+                    items: 3
+                },
+                1000: {
+                    items: 5
+                }
+            }
+        });
+    </script>
+    <script>
+        $(Document).ready(function () {
+            $(".collapse-title").click(function () {
+                $(this).add("active");
+            })
+        });
+    </script>
+    <script>
+        function getTimeRemaining(endtime) {
+            var t = Date.parse(endtime) - Date.parse(new Date());
+            var seconds = Math.floor((t / 1000) % 60);
+            var minutes = Math.floor((t / 1000 / 60) % 60);
+            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(t / (1000 * 60 * 60 * 24));
+            return {
+                'total': t,
+                'days': days,
+                'hours': hours,
+                'minutes': minutes,
+                'seconds': seconds
+            };
+        }
+
+        function initializeClock(id, endtime) {
+            var clock = document.getElementById(id);
+            var daysSpan = clock.querySelector('#days');
+            var hoursSpan = clock.querySelector('#hours');
+            var minutesSpan = clock.querySelector('#minutes');
+            var secondsSpan = clock.querySelector('#seconds');
+
+            function updateClock() {
+                try {
+                    var t = getTimeRemaining(endtime);
+
+
+
+                    if (t.total <= 0) {
+                        clearInterval(timeinterval);
+                        document.getElementById("count-down-container").style.display = "none";
+                    }
+                    else {
+                        document.getElementById("count-down-container").style.display = "flex";
+                    }
+
+                    daysSpan.innerHTML = t.days;
+                    hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+                    minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+                    secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+                }
+                catch (Exception) { }
+
+            }
+
+            updateClock();
+            var timeinterval = setInterval(updateClock, 1000);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var deadline = new Date("2019/07/07 23:59:59");
+            initializeClock('count-down-container', deadline);
+        })
+    </script>
+    <!-- Thêm vào phần JavaScript -->
+        <script>
+            function sortProducts() {
+                var selectedOption = document.getElementById("sort-select");
+                var sortValue = selectedOption.options[selectedOption.selectedIndex].value;
+
+                $.ajax({
+                    url: '/TrangChu/SortProducts',
+                    type: 'GET',
+                    data: { sort: sortValue },
+                    success: function (data) {
+                        $('.newproduct .owl-carousel').empty();
+                        $.each(data, function (index, item) {
+                            // Hiển thị sản phẩm sau khi sắp xếp (tương tự như trước)
+                        });
+
+                        $('.newproduct .owl-carousel').owlCarousel({
+                            loop: true,
+                            margin: 10,
+                            nav: true,
+                            autoplay: true,
+                            autoplayTimeout: 4000,
+                            autoplayHoverPause: true,
+                            responsive: {
+                                0: {
+                                    items: 2
+                                },
+                                600: {
+                                    items: 3
+                                },
+                                1000: {
+                                    items: 5
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+        </script>
+    }
+

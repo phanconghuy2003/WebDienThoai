@@ -1,0 +1,88 @@
+﻿@model List<bandienthoai.Models.EF.Menu>
+@{
+//var logo;
+//if (@ViewBag.logo==null)
+//{
+
+//}
+//else{ logo = (bandienthoai.Models.EF.BANNER)@ViewBag.logo; }
+}
+
+<div class=" main-menu">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light ">
+            <a class="navbar-brand logo" href="/"><img class="mw-100" alt="logo" src="@ViewBag.logo" /></a>
+            <div class="menu-top">
+                <button class="navbar-toggler text-white bg-info" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span><i class="fa fa-align-justify"></i></span>
+                </button>
+
+                <div class="collapse navbar-collapse " id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto menu">
+                        <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+                        @{Html.RenderAction("Productcategory", "SanPham"); }
+                        @foreach (var item in Model)
+                        {
+                            <li class="nav-item">  <a class="nav-link" href="@item.LINK" target="@item.TARGET">@item.TEXT</a></li>
+
+                        }
+                        @*@foreach (var item in Model.Where(x => x.PARENTID == null))
+                            {
+                                var child = Model.Where(x => x.PARENTID == item.ID);
+                                var parentClass = child.Count() > 0 ? " class=\"nav-link dropdown-toggle\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"" : "class=\"nav-link\"";
+                                var parentClassli = child.Count() > 0 ? "dropdown" : "";
+                                <li class="nav-item @parentClassli ">
+                                    <a class="nav-link" href="@item.LINK" target="@item.TARGET" @parentClass>
+                                        <span>@item.TEXT</span>
+                                    </a>
+                                    @if (child.Count() > 0)
+                                    {
+                                        <div class="dropdown-menu ">
+                                            @foreach (var itemchild in child)
+                                            {
+                                                <a class="dropdown-item" href="@itemchild.LINK">@itemchild.TEXT</a>
+                                            }
+                                        </div>
+                                    }
+                                </li>
+
+                            }*@
+
+
+
+                        @*<li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id=\"navbarDropdown\" role="\button\"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Phụ Kiện
+                                </a>
+
+                            </li>*@
+                    </ul>
+
+                </div>
+            </div>
+            <div class="search">
+                <form action="/tim-kiem" method="get" class="mb-0">
+
+
+                    <div class="input-group ">
+                        <input type="text" name="Keyword" id="txtKeyword" class="form-control " placeholder="Tìm kiếm">
+                        <div class="input-group-append ">
+                            <button class="input-group-text bg-white text-danger " type="submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </nav>
+    </div>
+</div>
+@* Back top *@
+<p id="goTop" style="display: block; position: fixed;
+    bottom: 65px;
+    right: 30px;
+    z-index: 9999; " class="fancybox-margin"><a href="javascript:void();" title="Scroll To Top"><i class="fa fa-angle-up"></i></a></p>
+
+   
+

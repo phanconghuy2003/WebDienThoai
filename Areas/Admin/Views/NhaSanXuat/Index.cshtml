@@ -1,0 +1,504 @@
+﻿@model bandienthoai.Areas.Admin.Models.NhaSanXuatModel
+@{ ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section Header{
+    <h2 class="no-margin-bottom text-info">Quản Lý Nhà Sản Xuất</h2>
+    <div class="page-button ml-auto">
+
+        <a href="#"><button id="btn-add" type="button" class="btn btn-default" onclick="AddNew(0)"><i class="fas fa-plus"></i> Tạo Mới</a></button></a>
+        <button id="btndelete" type="button" class="btn btn-danger"> <i class='fas fa-trash-alt'></i> Xóa</button>
+        <button id="btnHien" type="button" class="btn btn-info">   <i class="fas fa-eye"></i> Hiển Thị</button>
+        <button id="btnAn" type="button" class="btn btn-default">   <i class="fas fa-eye"></i> Ẩn</button>
+        <a href="/Admin/Home/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+
+    </div>
+}
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col col-4">
+            <div class="input-item mt-3">
+                <div class="form-group">
+
+                    <input class="form-control" type="text" id="txtSearch" placeholder="Tìm kiếm" />
+
+
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col col-4">
+            <div class="input-item">
+                <div class="form-group">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-table ">
+        <div class="section">
+            <table id="customer_data" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="checkall" /></th>
+                        <th>Mã NSX</th>
+                        <th> Tên nhà sản xuất</th>
+                        <th>SĐT</th>
+                        <th>Địa chỉ</th>
+                        <th>Ghi chú</th>
+                        <th>Chỉnh sửa</th>
+                        <th>Ẩn/Hiện</th>
+
+                    </tr>
+                </thead>
+                <tbody id="setTkList">
+                    <tr id="loadingStatus" style="color:red"></tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    @*Create A Popup Modal With Registration Form For Add Or Edit Record*@
+    <div class="modal fade" id="MyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="ModalTitle"></h4>
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                </div>
+                <div class="modal-body">
+                    <form id="form">
+                        <fieldset id="SubmitForm">
+                            @Html.HiddenFor(m => m.ID_NSX, new { @id = "IdNSX" })
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.MANSX, new { @id = "MaNSX", @class = "form-control", @placeholder = "Mã nhà sản xuất (*)", required = true })
+
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TEN_NSX, new { @id = "TenNSX", @class = "form-control", @placeholder = "Tên nhà sản xuất (*)", required = true })
+
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.SDT_NSX, new { @id = "SDT", @class = "form-control", @placeholder = "Số điện thoại" })
+
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.DIACHI_NSX, new { @id = "Diachi", @class = "form-control", @placeholder = "Địa chỉ ", required = true })
+
+                            </div>
+                            <div class="form-group">
+                                @Html.TextAreaFor(m => m.MOTA_NSX, new { @id = "Mota", @class = "form-control", @placeholder = "Mô tả chi tiết ", rows = "6", required = true })
+
+                            </div>
+
+                            <div class="form-group">
+                                @Html.TextAreaFor(m => m.GHICHU_NSX, new { @id = "Ghichu", @class = "form-control", @placeholder = "Ghi chú" })
+
+                            </div>
+                            <div class="form-group">
+                                <a href="#" class="btn btn-block btn-danger" id="SaveRecord">Lưu</a>
+                            </div>
+
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Create A Popup Modal With Registration Form For delete Record*@
+    <div class="modal fade" id="DeleteConfim">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="ModalTitle"></h4>
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                </div>
+                <div class="modal-body">
+                    <h4>Bạn có chắc muốn xóa?</h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i>Hủy</a>
+                    <a href="#" id="btnxacnhan" class="btn btn-danger"><i class="fas fa-check"></i>Xác nhận</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section jsFooter{
+
+    <script>
+        //Load table
+        $(document).ready(function () {
+            loaddata();
+            function loaddata() {
+                $("#loadingStatus").html("Loading...");
+                //$.get("/NhaSanXuat/GetListNhaSX", null, DataBind);
+                $.ajax({
+                    type: "GET",
+                    url: "/NhaSanXuat/GetListNhaSX",
+                    success: function (TkList) {
+
+                        DataBind(TkList);
+                    }
+
+                });
+            }
+
+            function DataBind(TkList) {
+
+                var setData = $("#setTkList");
+                for (var i = 0; TkList.length; i++) {
+                    var data = "<tr class='row_" + TkList[i].ID_NSX + " Search'>" +
+
+                        "<td><input type='checkbox' value='" + TkList[i].ID_NSX + "' class='record' /></td>" +
+                        "<td>" + TkList[i].MANSX + "</td>" +
+                        "<td>" + TkList[i].TEN_NSX + "</td>" +
+                        "<td>" + TkList[i].SDT_NSX + "</td>" +
+
+                        "<td>" + TkList[i].DIACHI_NSX + "</td>" +
+
+                        "<td>" + TkList[i].GHICHU_NSX + "</td>" +
+                        "<td>" + "<a href='#' class='btn btn-warning' onclick='EditRecord(" + TkList[i].ID_NSX + ")' >  <i class='fas fa-pencil-alt'></i> </a>" + "</td>" +
+                        "<td>" + "<button id='stt_" + TkList[i].ID_NSX + "' data-id='" + TkList[i].ID_NSX + "' type='button'onclick='anhien(" + TkList[i].ID_NSX + ")' class='btn btn-secondary btnAnHien' style='    min-width: 110px;'>" +
+                        "  <i class='fas fa-eye'></i> " +
+                        (TkList[i].ID_NSX ? 'Hiển Thị' : 'Ẩn') + "</button > </td > " +
+
+                        "</tr>";
+                    setData.append(data);
+                    $("#loadingStatus").html(" ");
+                }
+
+
+
+            }
+            //Show The Popup Modal For Add New
+
+
+
+
+        });
+
+        function AddNew(Id) {
+            $("#form")[0].reset();
+            $("#IdNSX").val(0);
+
+            $("#ModalTitle").html("Thêm mới");
+            $("#MyModal").modal();
+
+        }
+        //Show The Popup Modal For Edit Student Record
+
+
+        function EditRecord(Id) {
+            var url = "/NhaSanXuat/GetListNSXByID?id=" + Id;
+            $("#ModalTitle").html("Chỉnh sửa");
+            $("#MyModal").modal("show");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (data) {
+                    var obj = JSON.parse(data);
+
+                    $("#IdNSX").val(obj.ID_NSX);
+                    $("#MaNSX").val(obj.MANSX);
+                    $("#TenNSX").val(obj.TEN_NSX);
+                    $("#Ghichu").val(obj.GHICHU_NSX);
+                    $("#SDT").val(obj.SDT_NSX);
+                    $("#Mota").val(obj.MOTA_NSX);
+                    $("#Diachi").val(obj.DIACHI_NSX);
+                }
+            })
+
+        }
+        $("#SaveRecord").click(function () {
+
+            var data = $("#SubmitForm").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "/NhaSanXuat/SaveData",
+                data: data,
+                success: function (data) {
+                    $("#MyModal").modal("hide");
+                    window.location.href = "/Admin/NhaSanXuat/Index";
+                    //if (data == 1) {
+                    //    alert("Cập nhật thành công!");
+                    //}
+                    //else if (data == 1) {
+                    //    alert("Thêm thành công!");
+                    //}
+                    //else {
+                    //    alert("Thất bại!");
+                    //}
+
+
+
+                }
+            })
+
+
+        });
+        //delete
+        function DeleteRecord(id) {
+            $("#IdNSX").val(id);
+            $("#DeleteConfim").modal("show");
+        }
+        function ConfirmDelete() {
+            var IdNSX = $("#IdNSX").val();
+            $.ajax({
+                type: "POST",
+                url: "/NhaSanXuat/Delete?id=" + IdNSX,
+
+                success: function (value) {
+                    if (value) {
+                        $("#DeleteConfim").modal("hide");
+                        $(".row_" + IdNSX).remove();
+                        $(".alert").html("Xóa thành công!");
+                        $(".alert").classList.add("show");
+
+
+                    }
+                    else {
+                        $("#DeleteConfim").modal("hide");
+                        $(".alert").html("Xóa thất bại!");
+                        $(".alert").classList.add("show");
+
+
+                    }
+
+                }
+            })
+        }
+
+    </script>
+    <script>
+        //set check all
+        $("#checkall").click(function () {
+
+            $("table tbody").find('input[class="record"]').each(function () {
+
+                if ($("#checkall").is(":checked")) {
+
+                    $(this).prop('checked', true);
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                }
+            });
+        });
+        //Ẩn row
+        $("#btnAn").click(function () {
+            changeAn();
+        });
+        $("#btnHien").click(function () {
+            changeHien();
+        });
+        function changeAn() {
+            $("table tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+                        //var tmp = $(this);
+                        //var va = this.value;
+                        //   var btn = $(this).parents("tr").find('input[class="btnAnHien"]');
+                        var x = this.value;
+                        $.ajax({
+                            url: "/NhaSanXuat/ChangeAn?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == 1) {
+                                    $("#stt_" + x).html("<i class='fas fa-eye'></i> Ẩn");
+
+                                }
+
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+        function changeHien() {
+            $("table tbody").find('input[class="record"]').each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+                        //var tmp = $(this);
+                        //var va = this.value;
+                        var x = this.value;
+                        $.ajax({
+                            url: "/NhaSanXuat/ChangeHien?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == 2) {
+
+                                    $("#stt_" + x).html("<i class='fas fa-eye'></i> Hiển Thị");
+                                }
+                            }
+                        });
+
+
+                    }
+                    $(this).prop("checked", false);
+
+
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+        //Ẩn hiện theo dòng
+
+        //$('.btnAnHien').on('click', function (e) {
+        //   // e.preventDefault();
+        //    var btn = $(this);
+        //    var id = btn.data('id');
+        //    alert("dsds");
+        //    $.ajax({
+        //        url: "changeAnHien",
+        //        data: { id: id },
+        //        dataType: "json",
+        //        type: "POST",
+        //        success: function (response) {
+        //            console.log(response);
+        //            if (response == 1) {
+        //                btn.html("   <i class='fas fa-eye'></i> Ẩn");
+
+        //            }
+        //            else {
+        //                btn.html("   <i class='fas fa-eye'></i> Hiển Thị");
+        //            }
+        //        }
+
+        //    });
+
+        //});
+
+   //delete fonfim
+        $("#btndelete").click(function () {
+
+            var x = @ViewBag.typeLoai;
+
+            if (x == "2") {
+                alert("Bạn không được quyền xóa!");
+            }
+            else {
+                deletetable();
+            }
+
+        });
+        //delete table
+
+    function deletetable() {
+        $("table tbody").find('input[class="record"]').each(function () {
+            if ($(this) != null) {
+                var x = @ViewBag.typeLoai;
+                if (x == "2") {
+                    alert("Bạn không được quyền xóa!");
+                }
+                else if ($(this).is(":checked")) {
+                    var tmp = $(this);
+                    var va = this.value;
+
+                    $("#DeleteConfim").modal("show");
+                    $("#btnxacnhan").click(function () {
+                        $("#DeleteConfim").modal("hide");
+
+                        $.ajax({
+                            url: "/Admin/NhaSanXuat/Delete?id=" + va,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+                                console.log(response);
+                                if (response == true) {
+                                    alert("Xóa thành công!");
+                                }
+                                else {
+                                    alert("Xóa thất bại!");
+                                }
+                            }
+                        });
+                        $(tmp).parents("tr").remove();
+                    });
+                }
+
+            }
+
+
+        });
+    }
+    </script>
+    <script>
+        function anhien(id) {
+            var typeUser = @ViewBag.typeLoai;
+            var btn = $("#stt_"+id);
+            if (typeUser != "1") {
+                alert("Bạn không được quyền khóa tài khoản");
+            } else {
+                $.ajax({
+                    url: "changeAnHien",
+                    data: { id: id },
+                    dataType: "json",
+                    type: "POST",
+                    success: function (response) {
+
+                        if (response == true) {
+                            btn.html(" <i class='fas fa-eye'></i> Hiển Thị");
+                        }
+                        else {
+                            btn.html(" <i class='fas fa-eye'></i> Ẩn");
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        function Contains(txt1, txt2) {
+
+            if (txt1.indexOf(txt2) != -1) {
+
+                return true;
+            }
+        }
+        $(document).ready(function () {
+
+            $("#txtSearch").keyup(function () {
+
+                var txtSearch = $("#txtSearch").val().toLowerCase();
+
+                $(".Search").each(function () {
+
+                    if (!Contains($(this).text().toLowerCase(), txtSearch)) {
+                        $(this).hide();
+
+                    }
+                    else {
+                        $(this).show();
+
+                    }
+                });
+
+            });
+        });
+    </script>
+}

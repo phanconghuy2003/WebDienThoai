@@ -1,0 +1,232 @@
+﻿@model bandienthoai.Areas.Admin.Models.UserViewModel
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var listtype = ViewBag.LOAITAIKHOAN_ID;
+}
+
+
+@section Header{
+    <h2 class="no-margin-bottom">Cập Nhật Tài Khoản</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/User/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a id="btnluu" href="#" onclick="$('#btnSubmit').click()" type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Lưu</a>
+
+    </div>
+}
+
+@using (Html.BeginForm("Edit", "User", FormMethod.Post, new { id = "frmEditUser", name = "frmEditUser", @class = "needs-validation" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <div class="form-horizontal">
+            <input type="checkbox" id="chkchangepass" />Đổi mật khẩu
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @if (ViewBag.Success != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    Đăng ký thành công!
+                </div>
+            }
+            <div class="form-group row">
+
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "col-form-label " })
+                    @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "col-form-label " })
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+
+
+            </div>
+            <div class="form-group row">
+
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "col-form-label " })
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "col-form-label" })
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label class="col-form-label d-block">Loại tài khoản</label>
+                    @Html.DropDownList("LOAITAIKHOAN_ID", (IEnumerable<SelectListItem>)@listtype, new { htmlAttributes = new { @class = "form-control select mw-50" }, @class = "custom-select mw-50" })
+
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.PasswordOld, htmlAttributes: new { @class = "col-form-label " })
+                    @Html.PasswordFor(model => model.PasswordOld, new { @class = "form-control", @value = "123456" })
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                </div>
+
+
+            </div>
+
+
+
+
+            <div class="form-group row d-none" id="changepass">
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "col-form-label " })
+                    @Html.PasswordFor(model => model.Password, new { @class = "form-control", @value = "quocquoc" })
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "col-form-label " })
+                    @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control", @value = "quocquoc" })
+                    @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @*<div class="form-group" id="changepass">
+            <label>Nhập mật khẩu mới</label>
+            <input id="newpass" type="password" />
+            <label> Nhập lại mật khẩu</label>
+            <input id="confirmpass" type="password" />
+        </div>*@
+
+
+
+
+
+
+
+
+
+            <div class="form-group row">
+
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Province, htmlAttributes: new { @class = "col-form-label" })
+                    @Html.DropDownList("Province", new SelectList(new string[] { }), new { htmlAttributes = new { @class = "form-control", @id = "ddlProvince" }, @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Province, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.District, htmlAttributes: new { @class = "col-form-label" })
+                    @Html.DropDownList("District", new SelectList(new string[] { }), new { htmlAttributes = new { @class = "form-control", @id = "ddlDistrict" }, @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.District, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-offset-2">
+                    <input id="btnSubmit" type="submit" value="Đăng ký" class="btn btn-success d-none" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section jsFooter{
+   <script>
+     var changepass = {
+            unit: function () {
+                changepass.loadProvince();
+                changepass.regEvents();
+            },
+            regEvents: function () {
+                $("#chkchangepass").off('click').on('click', function () {
+                    var id = $("#chkchangepass");
+                    if (id.is(":checked")) {
+                        
+                        $("#newpass").text = "";
+                         $("#confirmpass").text = "";
+                        $("#changepass").removeClass("d-none");
+                    }
+                    else {
+                        $("#newpass").text = "quocquoc";
+                         $("#confirmpass").text = "quocquoc";
+                        $("#changepass").addClass("d-none");
+                    }
+                });
+            },
+            loadProvince: function () {
+
+                $.ajax({
+                    url: '/UserClient/LoadProvince',
+                    type: "POST",
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.status == true) {
+                            var html = '<option value="">--Chọn Tỉnh/ Thành--</option>';
+                            var data = res.data;
+                            $.each(data, function (i, item) {
+                                html += '<option value="' + item.ID + '">' + item.Name + '</option>'
+                            });
+                            $("#Province").html(html);
+                        }
+                    }
+                });
+            },
+           
+        }
+        changepass.unit();
+    </script>
+    <script>
+
+        var user = {
+            unit: function () {
+                user.loadProvince();
+                user.regEvents();
+            },
+            regEvents: function () {
+                $("#Province").off('change').on('change', function () {
+                    var id = parseInt($(this).val());
+                    if (id != '') {
+                        user.loadDistrict(id)
+                    }
+                    else {
+                        $('#District').html('');
+                    }
+                });
+            },
+            loadProvince: function () {
+
+                $.ajax({
+                    url: '/UserClient/LoadProvince',
+                    type: "POST",
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.status == true) {
+                            var html = '<option value="">--Chọn Tỉnh/ Thành--</option>';
+                            var data = res.data;
+                            $.each(data, function (i, item) {
+                                html += '<option value="' + item.ID + '">' + item.Name + '</option>'
+                            });
+                            $("#Province").html(html);
+                        }
+                    }
+                });
+            },
+            loadDistrict: function (id) {
+
+                $.ajax({
+                    url: '/UserClient/LoadDistrict',
+                    type: "POST",
+                    dataType: "json",
+                    data: { ProvinceID: id },
+                    success: function (res) {
+                        if (res.status == true) {
+                            var html = '<option value="">--Chọn Quận/Huyện--</option>';
+                            var data = res.data;
+                            $.each(data, function (i, item) {
+                                html += '<option value="' + item.ID + '">' + item.Name + '</option>'
+                            });
+                            $("#District").html(html);
+                        }
+                    }
+                });
+            }
+        }
+        user.unit();
+    </script>
+}

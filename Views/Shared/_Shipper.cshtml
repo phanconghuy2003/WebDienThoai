@@ -1,0 +1,57 @@
+﻿<html>
+
+<head>
+    <title>Điện thoại di động</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="~/Assets/client/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Assets/client/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Assets/client/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Assets/client/css/owl.carousel.min.css" rel="stylesheet" />
+    <link href="~/Assets/client/css/owl.theme.default.css" rel="stylesheet" />
+
+    <link href="~/Assets/client/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Assets/client/css/style-2.css" rel="stylesheet" />
+
+    @RenderSection("style", required: false)
+
+</head>
+
+<body>
+
+
+    <header>
+        <div class="topbar p-2">
+            <div class="container">
+               @* @{ Html.RenderAction("TopBar", "TrangChu");}*@
+            </div>
+        </div>
+
+      
+       @* @{Html.RenderAction("MainMenu", "TrangChu");}*@
+
+
+      
+
+    </header>
+    <div class="container">
+        @RenderBody()
+    </div>
+    <div class="footer group">
+        <div id="footer" class="container group">
+         
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script src="~/Assets/client/js/jquery-3.3.1.min.js"></script>
+<script src="~/Assets/client/js/bootstrap.min.js"></script>
+<script src="~/Assets/client/js/owl.carousel.js"></script>
+<script src="~/Assets/client/js/jquery-ui.min.js"></script>
+
+</script>
+@RenderSection("js", required: false)

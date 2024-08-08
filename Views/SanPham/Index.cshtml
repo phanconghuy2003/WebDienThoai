@@ -1,0 +1,138 @@
+﻿@model List<bandienthoai.Models.EF.SANPHAM>
+
+@{
+    var category = (bandienthoai.Models.EF.LOAISANPHAM)ViewBag.Category;
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="content ">
+    <div class="products-list ng-scope">
+
+        <div class="module-header">
+            <div class="box-title">
+                <h2 class="title-head"> Tất cả sản phẩm</h2>
+
+            </div>
+        </div>
+
+        <div class="section group">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    var link = "/chi-tiet/" + item.GHICHU_SANPHAM + "-" + item.SANPHAM_ID;
+                    <div class="col-md-3 col-6">
+                        <div class="product-item-box ">
+                            <div class="product-item">
+                                <a class="product-image" href="@link" title="@item.TEN_SANPHAM ">
+                                    <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM " alt="@item.TEN_SANPHAM ">
+                                 
+
+                                </a>
+
+                                <div class="product-info has-menu-dots">
+                                    <div class="info-left">
+                                        <h2 class="product-title">
+                                            <a href="#" title="note 9">@item.TEN_SANPHAM</a>
+                                        </h2>
+                                    </div>
+                                    <div class="info-right d-flex flex-column">
+                                        <div class="d-flex price">
+                                            
+                                            <span class="price-value"> @(item.GIA_SANPHAM != 0 ? (item.GIA_SANPHAM - item.GIA_SANPHAM * item.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")</span>
+                                            <span class="price-old">  @(item.GIA_SANPHAM != 0 ? item.GIA_SANPHAM.ToString("N0") + " VNĐ" : "")</span>
+
+                                        </div>
+                                        <div class="info-bottom">
+                                            <div class="view">
+                                                <span><i class="fa fa-eye" aria-hidden="true"></i></span>
+                                                <span> @item.LUOTXEM lượt</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center product-button">
+                                            <a class="btn btn-search" href="@link" title="Xem chi tiết">
+
+                                                <i class="fa fa-search"></i>
+
+
+                                            </a>
+                                            <a class="btn btn-cart" href="/them-gio-hang?ProductId=@item.SANPHAM_ID?quantity=1" title="Thêm giỏ hàng">
+                                                <i class="fa fa-cart-plus"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+
+
+            </div>
+
+        </div>
+
+        @* Phân trang *@
+
+        @if (ViewBag.TotalPage > 1)
+        {
+            var pageDisplay = (int)(ViewBag.MaxPage);
+            int totalpage = (int)ViewBag.TotalPage;
+            int currentPage = (int)ViewBag.page;
+            //tao so trang
+            var startPageIndex = Math.Max(1, currentPage - pageDisplay / 2);
+            var endPageindex = Math.Min(totalpage, currentPage + pageDisplay / 2);
+
+            var link = "/tat-ca-san-pham";
+            <nav>
+                <ul class="pagination">
+                    @if (currentPage > ViewBag.First)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@link?page=@ViewBag.First" title="Trang đầu" class="first"><i class="fa fa-angle-double-left"></i></a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="@link?page=@ViewBag.Prev" title="Trang trước" class="first"><i class="fa fa-angle-left"></i></a>
+                        </li>
+                    }
+                    @for (int i = startPageIndex; i <= endPageindex; i++)
+                    {
+                        if (currentPage == i)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@link?page=@i" title="Trang @i" class="active">@i</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@link?page=@i" title="Trang @i" class="pos">@i</a>
+                            </li>
+                        }
+                    }
+                    @if (currentPage < ViewBag.totalPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@link?page=@ViewBag.Next" title="Trang sau" class="next"><i class="fa fa-angle-right"></i></a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="@link?page=@ViewBag.Last" title="Trang cuối" class="last"><i class="fa fa-angle-double-right"></i></a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+
+
+        <div class="clearBoth"></div>
+
+    </div>
+</div>
+
+

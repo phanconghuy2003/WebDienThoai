@@ -1,0 +1,73 @@
+﻿@model bandienthoai.Areas.Admin.Models.EF.NHACUNGCAP
+
+@{
+    ViewBag.Title = "CreateNCC";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom">Quản lý nhà cung cấp</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/NhapHang/QLNhaCungCap"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a onclick="#submit-form.submit" href="#" data-toggle="modal" ><button  id="btn-add  type="button" class="btn btn-default"><i class="fas fa-plus"></i> Lưu</a></button></a>
+
+    </div>
+}
+
+@using (Html.BeginForm("CreateNCC", "NhapHang", FormMethod.Post, new { id = "submit-form"}))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal" >
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group row">
+       <label class="control-label col-md-4"> Mã NCC</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.MANCC, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.MANCC, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-md-4"> Tên NCC</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TEN_NCC, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TEN_NCC, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-md-4"> Mã NCC</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.DIACHI_NCC, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DIACHI_NCC, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-md-4"> Email NCC</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.EMAIL_NCC, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EMAIL_NCC, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-md-4"> SĐT NCC</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.SDT_NCC, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SDT_NCC, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-6">
+                <input type="submit" value="Chấp Nhận" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+

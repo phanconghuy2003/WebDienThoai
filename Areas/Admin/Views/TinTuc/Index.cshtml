@@ -1,0 +1,441 @@
+﻿@using bandienthoai.Areas.Admin.Models
+@model List<TinTucModel>
+@{
+    /**/
+
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom">Quản Lý Tin Tức</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/TinTuc/Create"><button id="btn-add" type="button" class="btn btn-default"><i class="fas fa-plus"></i> Tạo Mới</a></button></a>
+        <button id="btndelete" type="button" class="btn btn-danger"> <i class='fas fa-trash-alt'></i> Xóa</button>
+        <button id="btnHien" type="button" class="btn btn-info">   <i class="fas fa-eye"></i> Hiển Thị</button>
+        <button id="btnAn" type="button" class="btn btn-default">   <i class="fas fa-eye"></i> Ẩn</button>
+
+
+        <a href="/Admin/Home/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+    </div>
+}
+
+
+
+@using (Html.BeginForm("Index", "TinTuc", FormMethod.Get, new { @class = "needs-validation" }))
+{
+    <div class="container-fluid">
+        @*<div class="row">
+                <div class="col col-4">
+                    <div class="input-item">
+
+                        <div class="form-group mt-2">
+
+                            @Html.DropDownList("IDLOAITINTUC", (IEnumerable<SelectListItem>)ViewBag.IDLOAITINTUC, "--Chọn loại tin tức--", new { @class = "form-control" })
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col col-4">
+                    <div class="input-item">
+                        <div class="form-group">
+
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        <div class="page-table ">
+            <div class="section">
+                <table id="customer_data" class="table table-striped table-bordered ">
+                    <thead>
+                        <tr>
+
+                            <th width="10px"><input type="checkbox" id="checkall" /></th>
+                            <th width="10px">STT</th>
+
+
+                            <th width="80px">Hình Ảnh</th>
+                            <th width="150px">Tiêu Đề</th>
+
+                            <th>Mô tả ngắn</th>
+                            <th>Ghi Chú</th>
+                            <th width="20px"> Chỉnh Sửa</th>
+                            <th width="20px"> Ẩn/Hiện</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+
+                        <tr id="row_@item.TINTUC_ID">
+
+                            <td><input type="checkbox" value="@item.TINTUC_ID" class="record" /></td>
+                            <td><p></p></td>
+                            <td>
+                                <div style="width:100px;height:100px; border:2px solid #e2d4d4;background:#fff;">
+                                    <img id="img_@item.TINTUC_ID" style="cursor:pointer;height:100%;width:100%" src="@item.HINHANH_TINTUC"
+                                         onclick="selectImage('/TinTuc/changeImage/@item.TINTUC_ID',this.id)" />
+                                </div>
+                            </td>
+                            <td><p>@item.TIEUDE_TINTUC</p></td>
+
+
+
+
+
+                            <td><p>@item.MOTA_TINTUC</p></td>
+                            <td><p>@item.GHICHU_TINTUC</p></td>
+                            <td>
+                                <a id="@item.TINTUC_ID" href="javascript:Editdata(@item.TINTUC_ID)">
+                                    <button type="button" class="btn btn-default">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </button>
+                                </a>
+                            </td>
+                            <td>
+                                <button id="stt_@item.TINTUC_ID" data-id="@item.TINTUC_ID" type="button" class="btn btn-secondary btnAnHien" style="    min-width: 110px;">
+                                    <i class='fas fa-eye'></i>
+                                    @Html.Raw(item.IS_DELETE ? "Ẩn" : " Hiển Thị")
+
+                                </button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+        @*Create A Popup Modal With Registration Form For delete Record*@
+        <div class="modal fade" id="DeleteConfim">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="ModalTitle">Xóa tin tức</h4>
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                    </div>
+                    <div class="modal-body">
+                        <h4>Bạn có chắc muốn xóa không?</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> Hủy</a>
+                        <a href="#" class="btn btn-danger" id="btnxacnhan"><i class="fas fa-check"></i>Xác nhận</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+
+
+
+            var t = $('#customer_data').DataTable({
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[1, 'asc']],
+                "language": {
+
+                    "sSearch": "Tìm kiếm:",
+                    "sEmptyTable": "Không có dữ liệu trong bảng",
+                    "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty": "Hiển thị 0 tới 0 của 0 Phần tử",
+                    "sInfoFiltered": "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ",",
+                    "sLengthMenu": "Hiển thị _MENU_ Phần tử",
+                    "sLoadingRecords": "Loading...",
+                    "sProcessing": "Processing...",
+                    "sZeroRecords": "No matching records found",
+                    "oPaginate": {
+                        "sFirst": "Trang đầu",
+                        "sLast": "Trang cuối",
+                        "sNext": "Trang sau",
+                        "sPrevious": "Trang trước"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": activate to sort column ascending",
+                        "sSortDescending": ": activate to sort column descending"
+                    }
+                }
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(1, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+
+        });
+    </script>
+    <script>
+        $('#apply-form input').blur(function () {
+            if ($('input:text').is(":empty")) {
+                $(this).parents('p').addClass('warning');
+            }
+        });
+    </script>
+    <script>
+        function fillerBytypeUser() {
+            var filter, table, tr, td, i, txtValue, select = "--CHỌN LOẠI TÀI KHOẢN--";
+
+            filter = $("#IDLOAITAIKHOAN option:selected").text().toUpperCase();
+            table = document.getElementById("customer_data");
+            tr = table.getElementsByTagName("tr");
+
+            if (filter == select.toUpperCase()) {
+
+                for (i = 0; i < tr.length; i++) {
+                    tr[i].style.display = "";
+                }
+            }
+            else {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+
+        }
+         function Editdata(a) {
+           
+            
+
+                 window.location.href = "/Admin/TinTuc/Edit/" + a;
+            
+              
+            
+        }
+
+
+    </script>
+    <script type="text/javascript">
+        //set check all
+            $("#checkall").click(function () {
+
+                $("table tbody").find('input[class="record"]').each(function () {
+
+                    if ($("#checkall").is(":checked")) {
+
+                        $(this).prop('checked', true);
+                    }
+                    else {
+
+                        $(this).prop('checked', false);
+                    }
+                });
+            });
+
+        $(document).ready(function () {
+
+            $("#IDLOAITAIKHOAN").change(function () {
+
+                fillerBytypeUser()
+            });
+
+        });
+
+        //Ẩn hiện theo dòng
+
+        var user = {
+            init: function () {
+                user.registerEvents();
+            },
+            registerEvents: function () {
+                $('.btnAnHien').off('click').on('click', function (e) {
+                    e.preventDefault();
+                    var btn = $(this);
+                    var id = btn.data('id');
+                    $.ajax({
+                        url: "changeAnHien",
+                        data: { id: id },
+                        dataType: "json",
+                        type: "POST",
+                        success: function (response) {
+                            console.log(response);
+                            if (response == 1) {
+                                btn.html("   <i class='fas fa-eye'></i> Ẩn");
+
+                            }
+                            else {
+                                btn.html("   <i class='fas fa-eye'></i> Hiển Thị");
+                            }
+                        }
+
+                    });
+
+                });
+            }
+        }
+        user.init();
+        //Ẩn row
+        $("#btnAn").click(function () {
+            changeAn();
+        });
+        $("#btnHien").click(function () {
+            changeHien();
+        });
+        function changeAn() {
+            $("table tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                     if ($(this).is(":checked")) {
+                        //var tmp = $(this);
+                         //var va = this.value;
+                      //   var btn = $(this).parents("tr").find('input[class="btnAnHien"]');
+                         var x = this.value;
+                         $.ajax({
+                             url: "/TinTuc/ChangeAn?id=" +x,
+                                dataType: "json",
+                                type: "POST",
+                                success: function (response) {
+
+                                    if (response == 1) {
+                                        $("#stt_" + x).html("<i class='fas fa-eye'></i> Ẩn");
+
+                                    }
+
+                                }
+                            });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+        function changeHien() {
+            $("table tbody").find('input[class="record"]').each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+                        //var tmp = $(this);
+                        //var va = this.value;
+                        var x = this.value;
+                        $.ajax({
+                            url: "/TinTuc/ChangeHien?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == 2) {
+
+                                    $("#stt_" + x).html("<i class='fas fa-eye'></i> Hiển Thị");
+                                }
+                            }
+                        });
+
+
+                    }
+                    $(this).prop("checked", false);
+
+
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+         //delete fonfim
+        $("#btndelete").click(function () {
+
+            
+                deletetable();
+            
+
+        });
+        //delete table
+
+        function deletetable() {
+            $("table tbody").find('input[class="record"]').each(function () {
+                if ($(this) != null) {
+                    if ($(this).is(":checked")) {
+                        var tmp = $(this);
+                        var va = this.value;
+
+                        $("#DeleteConfim").modal("show");
+                        $("#btnxacnhan").click(function () {
+                            $("#DeleteConfim").modal("hide");
+                            $.ajax({
+                                url: "/TinTuc/Delete?id=" + va,
+                                dataType: "json",
+                                type: "POST",
+                                success: function (response) {
+                                    console.log(response);
+                                    if (response == true) {
+                                        alert("Xóa thành công!");
+                                    }
+                                    else {
+                                        alert("Xóa thất bại!");
+                                    }
+                                }
+                            });
+                            $(tmp).parents("tr").remove();
+                        });
+                    }
+
+                }
+
+
+            });
+        }
+
+    </script>
+    <script>
+        function selectImage(action, id) {
+            //alert(action);
+            var finder = new CKFinder();
+            finder.selectActionFunction = function (fileUrl) {
+
+                $.ajax({
+                    method: "GET",
+                    url: action,
+                    data: { picture: fileUrl }
+                }).done(function (path) {
+                    if (path != '') {
+                        alert("Lỗi cập nhật ảnh:" + path);
+                    }
+                    else {
+                        $("#" + id).attr("src", fileUrl);
+                    }
+
+                });
+
+            }
+            finder.popup();
+        }
+    </script>
+}
+

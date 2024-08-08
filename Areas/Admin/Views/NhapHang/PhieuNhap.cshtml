@@ -1,0 +1,598 @@
+﻿@using bandienthoai.Areas.Admin.Models.EF
+@model List<PHIEUNHAPHANG>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom text-info ">Quản Lý Đơn Hàng</h2>
+    <div class="page-button ml-auto">
+
+
+
+        <a href="#" id="btnInDon" class="btn btn-outline-warning"><i class="fas fa-print"></i> In Đơn Hàng</a>
+        <a href="#" id="btnChoDuyet" class="btn btn-outline-primary"><i class="far fa-envelope"></i> Xác nhận</a>
+     
+        <a href="#" id="btnDelete" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Xóa</a>
+        <a href="/Admin/Home/Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Trở Về</a>
+    </div>
+}
+
+<div class="input-group-box">
+
+    <a href="/Admin/NhapHang/PhieuNhap" class="btn btn-outline-info"><i class="far fa-envelope"></i> Danh sách chờ xử lý</a>
+    <a href="/Admin/NhapHang/PhieuNhap?stt=1"  class="btn btn-outline-primary"><i class="far fa-envelope"></i> Danh sách đã nhập kho</a>
+
+    @using (Html.BeginForm("Index", "DonHang", FormMethod.Get))
+    {
+        <div class="container">
+            <div class="row">
+
+
+
+                <div class="col col-4">
+                    <div class="input-item" style="display:none">
+                        <div class="form-group">
+                            <p>Tìm kiếm</p>
+
+                            <input class="form-control" type="text" id="txtSearch" placeholder="Tìm kiếm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="page-table">
+            <div class="container-fluid">
+                <table id="customer_data" class="table table-striped table-bordered">
+                    <thead id="list-header">
+                        <tr>
+                            <th><input type="checkbox" id="checkall" /></th>
+                            <th scope="col">STT</th>
+
+                            <th scope="col">Số Phiếu Nhập</th>
+
+                            <th scope="col">Tên Phiếu Nhập</th>
+
+
+
+                            <th scope="col">Ngày tạo</th>
+
+                            <th scope="col">Trạng thái</th>
+
+
+                            <th>Xem/Sửa</th>
+                            <th scope="col">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            <tr id="row_@item.PHIEUNHAPHANG_ID" class="Search">
+                                <td><input type="checkbox" value="@item.PHIEUNHAPHANG_ID" class="record" /></td>
+                                <td><p></p></td>
+                                <td><p>@item.PHIEUNHAPHANG_ID</p></td>
+                                <td class="SearchName"><p>@item.TENPHIEUNHAP</p></td>
+
+
+                                <td><p>@item.CREATEDATE</p></td>
+
+                                <td>
+                                    <p class="btn-active" data-id="@item.PHIEUNHAPHANG_ID" id="hd_@item.PHIEUNHAPHANG_ID">
+                                        @{if (item.STATUS == 0)
+                                            {
+                                                <i class='far fa-envelope'></i>
+                                                <span>chưa nhập</span>
+                                            }
+
+                                            else
+                                            {
+                                                <i class='far fa-envelope'></i>
+                                                <span>Đã nhập</span>
+                                            }
+                                        }
+                                    </p>
+                                </td>
+
+                                <td>
+                                    <a type="button" class="btn btn-info" href="javascript:DetailOrder(@item.PHIEUNHAPHANG_ID,'@item.TENPHIEUNHAP',@item.NGAYGIAO)">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+
+                                </td>
+                                <td class="d-flex justify-content-center td-button">
+                                    <button id="btn-del" type="button" class="btn btn-default">
+
+                                        @Html.Raw(@Ajax.ActionLink("[replacetext]", "Delete", new { id = item.PHIEUNHAPHANG_ID }, new AjaxOptions
+                                   {
+                                       Confirm = "Bạn có muốn xóa?",
+                                       OnComplete = "$('#row_" + @item.PHIEUNHAPHANG_ID + "'" + ").remove()" ,
+                                       HttpMethod = "Delete",
+                                      
+                                   }).ToHtmlString().Replace("[replacetext]", "<i class='fas fa-trash-alt'></i>"))
+                                    </button>
+
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+        @*Create A Popup Modal With Registration Form For delete Record*@
+        <div class="modal fade" id="DeleteConfim">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="ModalTitle"></h4>
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                    </div>
+                    <div class="modal-body">
+                        <h4>Bạn Có Chắc Muốn xóa?</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i></a>
+                        <a href="#" class="btn btn-danger" id="btnxacnhan"data-dismiss="modal"><i class="fas fa-check"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="DetailOrder">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="ModalTitle">Thông tin đơn hàng</h4>
+                        <div class=" pl-4"><input class="btn btn-primary" id="btnEditBill" type="checkbox" />Sửa hóa đơn nhập</div>
+
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                    </div>
+                    <div class="modal-body">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Tên đơn hàng</td>
+                                    <td id="infoName"></td>
+                                </tr>
+                                <tr>
+                                    <td>Đơn hàng</td>
+                                    <td ><span id="infoID"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Ngày tạo</td>
+                                    <td id="infoSdt"></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <h4>Danh sách sản phẩm</h4>
+                        <table>
+                            <thead>
+                                <tr>
+
+                                    <th width="300px">Sản phẩm</th>
+                                    <th width="300px">Nhà cung cấp</th>
+                                    <th width="300px">Số lượng</th>
+                                    <th width="300px">Đơn giá</th>
+                                </tr>
+                            </thead>
+                            <tbody id="setTkList"></tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-info" id="btnPrintBill"data-dismiss="modal" ><i class="fas fa-print"></i> In hóa đơn nhập</a>
+                        <a href="#" class="btn btn-success" id="btnsave" data-dismiss="modal"><i class="fas fa-save"></i> Nhập hàng</a>
+                        <a href="#" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> Hủy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/Assets/admin/js/Controllers/ChangeStatus.js"></script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+         
+
+
+            var t = $('#customer_data').DataTable({
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[1, 'asc']],
+                "language": {
+
+                    "sSearch": "Tìm kiếm:",
+                    "sEmptyTable": "Không có dữ liệu trong bảng",
+                    "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty": "Hiển thị 0 tới 0 của 0 Phần tử",
+                    "sInfoFiltered": "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ",",
+                    "sLengthMenu": "Hiển thị _MENU_ Phần tử",
+                    "sLoadingRecords": "Loading...",
+                    "sProcessing": "Processing...",
+                    "sZeroRecords": "No matching records found",
+                    "oPaginate": {
+                        "sFirst": "Trang đầu",
+                        "sLast": "Trang cuối",
+                        "sNext": "Trang sau",
+                        "sPrevious": "Trang trước"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": activate to sort column ascending",
+                        "sSortDescending": ": activate to sort column descending"
+                    }
+                }
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(1, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+            $("#list-header").css("background-color", "lightblue");
+            $("#list-header").on({
+                mouseenter: function () {
+                    $(this).css("background-color", "lightgray");
+                },
+                mouseleave: function () {
+                    $(this).css("background-color", "lightblue");
+                }
+            });
+
+        });
+    </script>
+
+
+
+    <script>
+        function Contains(txt1, txt2) {
+
+            if (txt1.indexOf(txt2) != -1) {
+
+                return true;
+            }
+        }
+        $(document).ready(function () {
+            
+            $('#btnsave').off('click').on('click', function () {
+
+                var sl = $(".quality")[0].value;
+                var soluong = 0;
+                if (sl != "") {
+                    soluong = parseInt(sl);
+                }
+                var gia = 0;
+                var g = $(".Price")[0].value;
+                if ( g != "") {
+                    gia = parseInt(g);
+                }
+               
+                var id = parseInt($("#infoID").text());
+
+                $.ajax({
+                    url: "UpdateHoadon",
+                    dataType: "json",
+                    data: {
+                        id: id,
+                        gia: gia,
+                        soluong: soluong,
+                    },
+                    type: "POST",
+                    success: function (response) {
+
+                        if (response.status == true) {
+
+                            alert("Đã nhập phiếu nhập: " + id + " thành công !");
+                        }
+                        else {
+                            alert("Đơn hàng này đã thêm rồi!");
+                        }
+                    }
+                });
+            });
+            $('#btnPrintBill').off('click').on('click', function () {
+                var id = $("#infoID");
+                $.ajax({
+                    url: "Export?id=" + parseInt(id.text()),
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == true) {
+
+                                    alert("In hóa đơn phiếu nhập: "+id+" thành công !");
+                                }
+                                else {
+                                    alert("Đơn hàng này đã thêm rồi!");
+                                }
+                            }
+                        });
+            });
+            $('#btnEditBill').off('click').on('click', function () {
+                if ($("#btnEditBill").is(":checked")) {
+                    $(".inputEdit").prop("readonly", false);
+
+                }
+
+                else {
+                  $(".inputEdit").prop("readonly", true);
+
+                }
+            });
+
+
+            $("#txtSearch").keyup(function () {
+                var txtSearch = $("#txtSearch").val().toLowerCase();setTkList
+
+                $(".Search").each(function () {
+                    if (!Contains($(this).text().toLowerCase(), txtSearch)) {
+                        $(this).hide();
+
+                    }
+                    else {
+                        $(this).show();
+
+                    }
+                });
+
+            });
+        });
+
+    </script>
+    @* Get detail *@
+    <script>
+          function DataBind(TkList) {
+          
+            $("#setTkList").empty();
+            var setData = $("#setTkList");
+            for (var i = 0; i < TkList.length; i++) {
+
+                var data = "<tr>" +
+                    "<td data-id='" + TkList[i].NameProduct + "'>" + TkList[i].NameProduct+ "</td>" +
+                    "<td data-id='" + TkList[i].NameNCC + "'>" + TkList[i].NameNCC + "</td>" +
+                  
+                   
+                    "<td> <input class='inputEdit quality form-control' type='number' readonly value='"+ TkList[i].Quality + "'/></td>" +
+                  
+                    "<td> <input class='inputEdit Price form-control' type='number'readonly value='"+ TkList[i].Price + "' /></td>" +
+                    
+                    "</tr>";
+                setData.append(data);
+
+            }
+
+        
+        }
+        
+    </script>
+
+    @*check an hien*@
+    <script>
+        $(document).ready(function () {
+            $("#ModalTitle").text("Xóa");
+           
+
+        });
+        //set check all
+        $("#checkall").click(function () {
+
+            $("#customer_data tbody").find('input[class="record"]').each(function () {
+
+                if ($("#checkall").is(":checked")) {
+
+                    $(this).prop('checked', true);
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                }
+            });
+        });
+
+      
+        //set chờ duyệt
+        
+        $("#btnChoDuyet").click(function () {
+
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: "UpdateBill?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response != true) {
+
+                                    window.location.href = "/Admin/NhapHang/PhieuNhap";
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+        });
+
+
+
+        //change duyet
+        function changeDuyet(url) {
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: url + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == 5) {
+                                    $("#hd_" + x).html("<i class='fas fa-credit-card'></i> Đang giao");
+
+                                }
+                                else if (response == 2)
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i>Đã duyệt");
+
+                                else {
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i> Chờ duyệt");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+    </script>
+    <script>
+        function DetailOrder(id, name,date) {
+            $("#infoName").text(name);
+            $("#infoID").text(id);
+            $("#infoSdt").text(date);
+       
+
+            $.ajax({
+                url: 'GetNhap',
+                data: { id: id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+
+                    if (res.status==true) {
+                         $("#ModalTitle").text("Thông tin sản phẩm");
+
+                    DataBind(res.list);
+
+                    $("#DetailOrder").modal("show");
+                    }
+
+
+                }
+            });
+        }
+    </script>
+    <script>
+        //inhoadon
+        $("#btnInDon").click(function () {
+            var kq = true;
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: "Export?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+                                if (response.status) {
+                                    kq = response.status;
+                                   
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+            if (kq == true) {
+                alert("In hóa đơn thành công!");;
+            }
+            else {
+                alert("In hóa đơn không thành công!");
+            }
+        });
+
+    </script>
+    <script type="text/javascript">
+
+        //delete fonfim
+     
+            $('#btnDelete').off('click').on('click', function () {
+            deletetable();
+
+        });
+        //delete table
+
+        function deletetable() {
+            var kq = false;
+            $("#customer_data tbody").find('input[class="record"]').each(function () {
+                if ($(this) != null) {
+
+
+                    if ($(this).is(":checked")) {
+                        var tmp = $(this);
+                        var va = this.value;
+
+                        $("#DeleteConfim").modal("show");
+                        $('#btnxacnhan').off('click').on('click', function () {
+                      
+                            
+                            $.ajax({
+                                url: "Delete?id=" + va,
+                                dataType: "json",
+                                type: "DELETE",
+                                success: function (response) {
+                                    kq = response.status;
+
+                                }
+                            });
+                            $(tmp).parents("tr").remove();
+                        });
+                    }
+
+                }
+
+
+            });
+
+        }
+
+    </script>
+}
+

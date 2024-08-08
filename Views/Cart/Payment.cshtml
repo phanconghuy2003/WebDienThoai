@@ -1,0 +1,213 @@
+﻿@model List<bandienthoai.Models.CartItem>
+@using System.Configuration
+@{
+    var total = 0;
+    ViewBag.Title = "Thanh Toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section js{
+    <script>
+        var cart = {
+            init: function () {
+                cart.regEvents();
+            },
+            regEvents: function () {
+                $('#btnContinue').off('click').on('click', function () {
+                    window.location.href = "/";
+                });
+                $('#btnUpdate').off('click').on('click', function () {
+                    var listProduct = $('.txtQuantity');
+                    var listCart = [];
+                    $.each(listProduct, function (i, item) {
+                        listCart.push({
+                            Quantity: $(item).val(),
+                            Product: {
+                                SANPHAM_ID: $(item).data('id')
+                            }
+
+                        });
+                    });
+
+                    $.ajax({
+                        url: '/Cart/Update',
+                        data: { cartModel: JSON.stringify(listCart) },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                window.location.href = "/gio-hang";
+                            }
+
+                        }
+                    });
+                });
+                $('#btnDelete').off('click').on('click', function () {
+
+                    $.ajax({
+                        url: '/Cart/DeleteAll',
+
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                window.location.href = "/gio-hang";
+                            }
+
+                        }
+                    });
+                });
+                // xóa từng sản phẩm
+                $('.btn-delete').off('click').on('click', function (e) {
+
+                    e.preventDefault();
+                    $.ajax({
+                        url: '/Cart/Delete?id=' + $(this).data('id'),
+
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                window.location.href = "/gio-hang";
+                            }
+
+                        }
+                    });
+                });
+            }
+        }
+        cart.init();
+    </script>
+    <script type="text/javascript">
+
+        function FormatNumber(pNumber) {
+                 var num = pNumber.toString().replace(/\$|\,/g, '');
+                 if (isNaN(num)) {
+                     num = "";
+                 }
+                 sign = (num == (num = Math.abs(num)));
+                 num = Math.floor(num * 100 + 0.50000000001);
+                 num = Math.floor(num / 100).toString();
+                 for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++) {
+                     num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+                 }
+                 return (((sign) ? '' : '-') + num);
+        }
+        $(document).ready(function () {
+
+            $("#total").text(FormatNumber(@total)+" VNĐ");
+        });
+    </script>
+}
+@if (Model.Count > 0)
+{
+    <div class="content">
+
+        <div class="section group">
+            <table class="table table-striped">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Mã sản phẩm</th>
+                        <th scope="col">Tên sản phẩm</th>
+                        <th scope="col">Ảnh sản phẩm</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Đơn giá</th>
+                        <th scope="col">Thành tiền</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        @(total += (int)(item.Product.GIA_SANPHAM - (item.Product.GIA_SANPHAM * item.Product.KHUYENMAI / 100) * item.Quantity));
+                        <tr>
+                            <td>@item.Product.MA_SANPHAM</td>
+                            <td>@item.Product.TEN_SANPHAM</td>
+                            <td><div class="box-image"><img class="img-thumbnail" src="@item.Product.HINHANH_SANPHAM" /></div></td>
+                            <td>
+                                <div class="product-buy">
+                                    <p class="product-row">
+                                        <span>
+                                            @item.Quantity
+                                        </span>
+                                    </p>
+                                </div>
+                            </td>
+                            <td><div id="PriceSale" value="@(item.Product.GIA_SANPHAM != 0 ? (item.Product.GIA_SANPHAM - item.Product.GIA_SANPHAM * item.Product.KHUYENMAI / 100):0)">@(item.Product.GIA_SANPHAM != 0 ? (item.Product.GIA_SANPHAM - item.Product.GIA_SANPHAM * item.Product.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")</div></td>
+                            <td><div id="TotalPrice">@(item.Product.GIA_SANPHAM != 0 ? ((item.Product.GIA_SANPHAM - item.Product.GIA_SANPHAM * item.Product.KHUYENMAI / 100) * item.Quantity).ToString("N0") + " VNĐ" : "Liên Hệ")</div></td>
+                            <td><a class="btn btn-outline-danger btn-delete" data-id="@item.Product.SANPHAM_ID" href="#"><i class="fa fa-delete"></i>xóa</a></td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class="section group">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    @using (Html.BeginForm("Payment", "Cart", FormMethod.Post))
+                    {
+                        <div class="form-group">
+                            <label>Người nhận</label>
+
+                            <input name="shipName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Điện thoại</label>
+
+                            <input type="tel" name="mobile" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+
+                            <input type="email" name="email" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+
+                            <input name="address" class="form-control" required />
+                        </div>
+                        <button class="btn btn-success" type="submit">Thanh toán</button>
+                        <a class="btn btn-dark" href="/gio-hang">Về giỏ hàng</a>
+                    }
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="product-buy">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>Tổng tiền hàng:</td>
+                                    <td><span id="total" class="text-danger text-bold"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Thời gian giao hàng:</td>
+                                    <td><span class="text-danger text-bold">&nbsp; 3 - 5 Ngày</span></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                                <input type="hidden" name="cmd" value="_s-xclick">
+                                                <input type="hidden" name="hosted_button_id" value="XTEFDU6PRHLGU">
+                                                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="Thanh toán trực tuyến!">
+                                                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                                            </form>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+}
+

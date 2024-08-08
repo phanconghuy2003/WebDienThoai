@@ -1,0 +1,110 @@
+﻿@model IEnumerable<bandienthoai.Areas.Admin.Models.EF.NHACUNGCAP>
+
+@{
+    ViewBag.Title = "QLNhaCungCap";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom">Quản Lý Tài Khoản</h2>
+    <div class="page-button ml-auto">
+        <a href="#"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a href="/Admin/NhapHang/CreateNCC"><button id="btn-add" type="button" class="btn btn-default"><i class="fas fa-plus"></i> Tạo Mới</a></button></a>
+
+    </div>
+}
+<div class="input-group-box">
+    @using (Html.BeginForm("QLNhaCungCap", "NhapHang", FormMethod.Get))
+    {
+        <div class="container-fluid d-flex">
+            <div class="input d-flex justify-content-between">
+
+
+                <div class="input-item" style="width: 200px">
+                    <div class="dropdown-sin-1">
+                        <select style="display:none" multiple placeholder="Select">
+                            <option value="1">1</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-item" style="width: 200px">
+
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="date" id="date" data-select="datepicker" data-locked="25/12/2014;1/1/2015" data-toggle="datepicker">
+                        <span class="input-group-btn"><button type="button" class="btn btn-primary" data-toggle="datepicker"><i class="fas fa-calendar-alt"></i></button></span>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="input-search ml-auto" style="width: auto;">
+                <a href="#"><button id="btn-search" type="submit" class="btn btn-default"><i class="fas fa-search"></i></button></a>
+            </div>
+
+        </div>
+    }
+
+
+</div>
+<div class="page-table">
+    <div class="container-fluid">
+        <table id="example" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên nhà cung cấp</th>
+                    <th>Địa chỉ</th>
+                    <th>Email</th>
+                    <th>Điện thoại</th>
+                    <th>Ngày tạo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+
+                    <tr id="row_@item.ID_NCC">
+                        <td>1</td>
+                        <td>@item.TEN_NCC</td>
+                        <td>@item.DIACHI_NCC</td>
+                        <td>@item.EMAIL_NCC</td>
+                        <td>@item.SDT_NCC</td>
+                        <td>@item.CREATEDATE</td>
+
+                        <td class="d-flex justify-content-center">
+                            <button id="btn-del" type="button" class="btn btn-default">
+
+                                @Html.Raw(@Ajax.ActionLink("[replacetext]", "DeleteNCC", new { id = item.ID_NCC }, new AjaxOptions
+                                {
+                                    Confirm = "Bạn có muốn xóa?",
+                                    OnComplete = "$('#row_" + @item.ID_NCC + "'" + ").remove()",
+                                    HttpMethod = "Delete"
+                                }).ToHtmlString().Replace("[replacetext]", "<i class='fas fa-trash-alt'></i>"))
+                            </button>
+
+                            <a href="/Admin/NhapHang/EditNCC/@item.ID_NCC">
+                                <button id="btn-edit" type="button" class="btn btn-default">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Assets/admin/js/jquery.datepicker.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+   
+}

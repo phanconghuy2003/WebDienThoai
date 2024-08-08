@@ -1,0 +1,212 @@
+﻿@model bandienthoai.Areas.Admin.Models.LoaiTinTucModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section Header{
+    <h2 class="no-margin-bottom">Quản Lý Tin Tức</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/Home/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a href="#"><button id="btn-add" type="button" class="btn btn-default" onclick="AddNew(0)"><i class="fas fa-plus"></i> Tạo Mới</a></button></a>
+
+    </div>
+}
+
+
+
+<div class="container-fluid">
+    <table id="customer_data" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+
+                <th> Loại Tin Tức</th>
+                <th>Người Tạo</th>
+                <th>Người Cập Nhật</th>
+
+                <th>Action(Edit)</th>
+                <th>Action(Delete)</th>
+
+            </tr>
+        </thead>
+        <tbody id="setTkList">
+            <tr id="loadingStatus" style="color:red"></tr>
+        </tbody>
+    </table>
+
+
+    @*Create A Popup Modal With Registration Form For Add Or Edit Record*@
+    <div class="modal fade" id="MyModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="ModalTitle"></h4>
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                </div>
+                <div class="modal-body">
+                    <form id="form">
+                        <fieldset id="SubmitForm">
+                            @Html.HiddenFor(m => m.IDLOAITINTUC, new { @id = "LoaiId" })
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TENLOAITIN, new { @id = "NametypeNews", @class = "form-control", @placeholder = "Loại tin tức*" })
+
+                            </div>
+
+
+                            <div class="form-group">
+                                <a href="#" class="btn btn-block btn-danger" id="SaveRecord">Lưu</a>
+                            </div>
+
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Create A Popup Modal With Registration Form For delete Record*@
+    <div class="modal fade" id="DeleteConfim">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="ModalTitle"></h4>
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                </div>
+                <div class="modal-body">
+                    <h4>Bạn có chắc muốn xóa?</h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i></a>
+                    <a href="#" class="btn btn-danger" onclick="ConfirmDelete()"><i class="fas fa-check"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section jsFooter{
+
+    <script>
+
+        $(document).ready(function () {
+            loaddata();
+            function loaddata() {
+                $("#loadingStatus").html("Loading...");
+                $.get("/LoaiTinTuc/GetListLoaiTin", null, DataBind);
+                //$.ajax({
+                //    type: "GET",
+                //    url: "/Admin/LoaiTinTuc/GetListLoaiTin",
+                //    success: function (TkList) {
+
+                //  DataBind(TkList);
+                //    }
+
+                //});
+            }
+
+            function DataBind(TkList) {
+
+                var setData = $("#setTkList");
+                for (var i = 0; TkList.length; i++) {
+                    var data = "<tr class='row_" + TkList[i].IDLOAITINTUC + "'>" +
+                        "<td><p>" + (i + 1) + "</p></td>" +
+
+                        "<td>" + TkList[i].TENLOAITIN + "</td>" +
+                        "<td>" + TkList[i].CREATEBY + "</td>" +
+
+                        "<td>" + TkList[i].MODIFILEDBY + "</td>" +
+
+
+                        "<td>" + "<a href='#' class='btn btn-warning' onclick='EditRecord(" + TkList[i].IDLOAITINTUC + ")' >  <i class='fas fa-pencil-alt'></i> </a>" + "</td>" +
+                        "<td>" + "<a href='#' class='btn btn-danger' onclick='DeleteRecord(" + TkList[i].IDLOAITINTUC + ")'>   <i class='fas fa-trash-alt'></i></a>" + "</td>" +
+                        "</tr>";
+                    setData.append(data);
+                    $("#loadingStatus").html(" ");
+                }
+
+
+
+            }
+            //Show The Popup Modal For Add New
+
+
+
+
+        });
+
+        function AddNew(Id) {
+            $("#form")[0].reset();
+            $("#LoaiId").val(0);
+
+            $("#ModalTitle").html("Thêm mới");
+            $("#MyModal").modal();
+
+        }
+        //Show The Popup Modal For Edit Student Record
+
+
+        function EditRecord(Id) {
+            var url = "/LoaiTinTuc/GetListTypeNewsByID?ID=" + Id;
+            $("#ModalTitle").html("Chỉnh sửa");
+            $("#MyModal").modal("show");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    $("#LoaiId").val(obj.IDLOAITINTUC);
+                    $("#NametypeNews").val(obj.TENLOAITIN);
+                }
+            })
+        }
+        $("#SaveRecord").click(function () {
+
+            var data = $("#SubmitForm").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "/LoaiTinTuc/SaveData",
+                data: data,
+                success: function (data) {
+                    window.location.href = "/Admin/LoaiTinTuc/Index";
+                    $("#MyModal").modal("hide");
+                }
+            })
+
+
+        });
+        //delete
+        function DeleteRecord(id) {
+            $("#LoaiId").val(id);
+            $("#DeleteConfim").modal("show");
+        }
+        function ConfirmDelete() {
+            var loaiId = $("#LoaiId").val();
+            $.ajax({
+                type: "POST",
+                url: "/LoaiTinTuc/Delete?id=" + loaiId,
+
+                success: function (value) {
+                    if (value) {
+                        $("#DeleteConfim").modal("hide");
+                        $(".row_" + loaiId).remove();
+                        $(".alert").html("Xóa thành công!");
+                        $(".alert").classList.add("show");
+
+
+                    }
+                    else {
+                        $("#DeleteConfim").modal("hide");
+                        $(".alert").html("Xóa thất bại!");
+                        $(".alert").classList.add("show");
+
+
+                    }
+
+                }
+            })
+        }
+
+    </script>
+}

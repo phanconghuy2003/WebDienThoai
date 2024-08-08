@@ -1,0 +1,17 @@
+﻿@using System.Configuration
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+   var Listcart = (List<bandienthoai.Models.CartItem>)ViewBag.Listcart;
+
+}
+
+    <form method="post" action="@ConfigurationManager.AppSettings["PaypalSubmit"]">
+        <input type="hidden" name="upload" value="1" />
+        <input type="hidden" name="return" value="@ConfigurationManager.AppSettings["ReturnUrl"]" />
+        <input type="hidden" name="cmd" value="_cart" />
+        <input type="hidden" name="bisiness" value="@ConfigurationManager.AppSettings["PaypalUserName"]" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="Thanh toán trực tuyến!">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+    </form>
+

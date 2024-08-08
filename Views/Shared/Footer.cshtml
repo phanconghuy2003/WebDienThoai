@@ -1,0 +1,13 @@
+﻿@*@model bandienthoai.Models.EF.FOOTER*@
+
+@{ if (ViewBag.Footer != null)
+    {
+    @Html.Raw(ViewBag.Footer)
+    }
+
+    else {
+        <div>
+            <p></p>
+        </div>
+    }
+}

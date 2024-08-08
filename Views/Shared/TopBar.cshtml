@@ -1,0 +1,55 @@
+﻿@model List<bandienthoai.Models.EF.Menu>
+<div class="row">
+    <div class=" col-md-4  col-lg-6 ">
+        <div class="top_left fw">
+            @{ 
+                            /**/
+
+                            var session = (UserLogin)Session[bandienthoai.Common.CommonStants.USER_SESSION];
+            }
+            @if (session == null)
+            {
+                <ul class="d-flex  mb-1">
+                   
+                    <li class="ml-2 mr-2">
+                        <a id="dangnhap" href="/dang-nhap" title="Đăng nhập" class=" btn btn-outline-success">
+                            <i class="fa fa-sign-in"></i><span> Đăng nhập</span>
+                        </a>
+                    </li>
+                    <li class="cp-item">
+                        <a href="/dang-ky-thanh-vien" title="Đăng ký" class="btn btn-outline-info">
+                            <i class="fa fa-edit"></i><span> Đăng ký</span>
+                        </a>
+                    </li>
+
+                </ul>
+            }
+            else
+            {
+                <ul class="d-flex  mb-1">
+
+                    <li class="btn btn-outline-warning">
+                        @Html.ActionLink(" Đăng xuất", "Logout", "UserClient")
+                    </li>
+                 
+                    <li class="cp-item">
+                        <a href="/thong-tin-user" title="Xem thông tin" class="btn btn-outline-info">
+                            <i class="fa fa-edit"></i><span> @session.userName</span>
+                        </a>
+                    </li>
+                </ul>
+            }
+
+        </div>
+    </div>
+    <div class="col-md-4  col-lg-6 ">
+        <div class="top_right fw d-flex">
+            <div class="hotline ">
+                <a href="#">  <i class="fa fa-phone"></i><strong> 0373537596  </strong></a>
+            </div>
+            @{Html.RenderAction("HeaderCart", "TrangChu");}  
+
+
+        </div>
+    </div>
+</div>

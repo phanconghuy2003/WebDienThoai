@@ -1,0 +1,82 @@
+﻿@model List<bandienthoai.Models.EF.ORDER>
+@{
+    Layout = "~/Views/Shared/_Shipper.cshtml";
+
+}
+
+
+    <div class="row w-100">
+        <div class="col-8">
+            <h2 class="text-danger" style="font-size:18px;font-weight:700">Danh sách đơn hàng</h2>
+        </div>
+        <div class="col-2">
+            <a class=" btn btn-danger" href="/Shipper/Logout"><i class="fa fa-sign-out"></i></a>
+        </div>
+        <div class="col-2">
+            <a class=" btn btn-info" title="Giao hàng" href="/Shipper/GiaoHangShipper"><i class="fa fa-info-circle"></i></a>
+        </div>
+    </div>
+<div class="content">
+
+
+    <div class="table-responsive-sm">
+        <table class="table table-striped" style="font-size:13px">
+            <thead>
+            <th width="10%">Đơn hàng</th>
+            <th width="80%">Thông tin giao hàng</th>
+
+            <th width="10%">Xem chi tiết</th>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ID</td>
+                        <td>
+                            <p class="m-1"><span><i class="fa fa-map-marker" style="color:blue"></i>  &nbsp;Điểm nhận: &nbsp;</span>(Mobile Shop)140 Lê Trọng Tấn</p>
+                            <p class="m-1"><span><i class="fa fa-map-marker" style="color:red"></i> &nbsp;Điểm giao: &nbsp;</span>@item.SHIPDDRESS</p>
+                        </td>
+
+                        <td><a href="/Shipper/Detail-@item.ID" class="btn btn-info btn-submit">Xem</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section js{
+    <script>
+        var order = {
+            init: function () {
+                order.regEvents();
+            },
+            regEvents: function (id) {
+
+
+                $('#btnUpdate').off('click').on('click', function () {
+
+
+
+
+                    $.ajax({
+                        url: '',
+                        data: { id: id },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                window.location.href = "/gio-hang";
+                            }
+
+                        }
+                    });
+                });
+
+            }
+        }
+        order.init();
+    </script>
+}
+
+

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <Item type="province" id="44" value="An Giang" />
+
+  <Item type="province" id="11" value="Bà Rịa - Vũng Tàu" />
+  <Item type="province" id="22" value="Bắc Giang" />
+  <Item type="province" id="33" value="Bắc Kạn" />
+  <Item type="province" id="44" value="Bạc Liêu" />
+  <Item type="province" id="55" value="Bắc Ninh" />
+  <Item type="province" id="66" value="Bến Tre" />
+  <Item type="province" id="77" value="Bình Định" />
+  <Item type="province" id="88" value="Bình Dương" />
+  <Item type="province" id="99" value="Bình Phước" />
+  <Item type="province" id="12" value="Bình Thuận" />
+  <Item type="province" id="13" value="Cà Mau" />
+  <Item type="province" id="15" value="Cao Bằng" />
+  <Item type="province" id="14" value="Cần Thơ" />
+  <Item type="province" id="16" value="Đà Nẵng" />
+  <Item type="province" id="17" value="Đắk Lắk" />
+  <Item type="province" id="18" value="Đắk Nông" />
+  <Item type="province" id="19" value="Điện Biên" />
+  <Item type="province" id="20" value="Đồng Nai" />
+  <Item type="province" id="21" value="Đồng Tháp" />
+  <Item type="province" id="23" value="Gia Lai" />
+  <Item type="province" id="24" value="Hà Giang" />
+  <Item type="province" id="25" value="Hà Nam" />
+  <Item type="province" id="26" value="Hà Nội" >
+  <Item type="district" id="261" value="Huyện Ba Vì" >
+    <Item type="precinct" id="261" value="Thị trấn Tây Đằng" />
+    <Item type="precinct" id="261" value="Xã Ba Trại" />
+    <Item type="precinct" id="261" value="Xã Ba Vì" />
+  </Item>
+  </Item>
+    <Item type="province" id="27" value="Hà Tĩnh" />
+    <Item type="province" id="28" value="Hải Dương" />
+    <Item type="province" id="29" value="Hải Phòng" />
+    <Item type="province" id="30" value="Hậu Giang" />
+    <Item type="province" id="35" value="Hòa Bình" />
+    <Item type="province" id="31" value="Hồ Chí Minh" />
+    <Item type="province" id="32" value="Hưng Yên" />
+    <Item type="province" id="34" value="Khánh Hòa" />
+    <Item type="province" id="36" value="Kiên Giang" />
+    <Item type="province" id="37" value="Kon Tum" />
+    <Item type="province" id="38" value="Lai Châu" />
+    <Item type="province" id="39" value="Lâm Đồng" />
+    <Item type="province" id="40" value="Lạng Sơn" />
+    <Item type="province" id="41" value="Lào Cai" />
+    <Item type="province" id="42" value="Long An" />
+    <Item type="province" id="43" value="Nam Định" />
+    <Item type="province" id="45" value="Nghệ An" />
+    <Item type="province" id="46" value="Ninh Bình" />
+    <Item type="province" id="47" value="Ninh Thuận" />
+    <Item type="province" id="48" value="Phú Thọ" />
+    <Item type="province" id="49" value="Phú Yên" />
+    <Item type="province" id="50" value="Quảng Bình" />
+    <Item type="province" id="51" value="Quảng Nam" />
+    <Item type="province" id="52" value="Quảng Ngãi" />
+    <Item type="province" id="53" value="Quảng Ninh" />
+    <Item type="province" id="54" value="Quảng Trị" />
+    <Item type="province" id="56" value="Sóc Trăng" />
+    <Item type="province" id="67" value="Sơn La" />
+    <Item type="province" id="58" value="Tây Ninh" />
+    <Item type="province" id="59" value="Thái Bình" />
+    <Item type="province" id="69" value="Thái Nguyên" />
+    <Item type="province" id="62" value="Thanh Hóa" />
+    <Item type="province" id="64" value="Thừa Thiên - Huế" />
+    <Item type="province" id="71" value="Tiền Giang" />
+    <Item type="province" id="72" value="Trà Vinh" />
+    <Item type="province" id="73" value="Tuyên Quang" />
+    <Item type="province" id="74" value="Vĩnh Long" />
+    <Item type="province" id="7" value="Vĩnh Phúc" />
+    <Item type="province" id="79" value="Yên Bái" />
+  </Root>

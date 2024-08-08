@@ -1,0 +1,185 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section Header{
+    <h2 class="no-margin-bottom" href="~\TrangChuController\Index">Trang Chủ</h2>
+}
+
+<div class="dashboard-cards">
+    <div class="container-fluid">
+        <div class="row bg-white has-shadow d-md-flex">
+            <!-- Item -->
+            <div class="col-md-4">
+                <a href="#" class="card-item d-md-flex">
+                    <div class="card-text">
+                        <span class="number">71</span>
+                        <p class="title">Thông tin<br />liên lạc mới</p>
+                    </div>
+                    <div class="card-icon ml-auto">
+                        <div>
+                            <i class="fas fa-envelope icon"></i>
+                        </div>
+                        <span class="view-more">Xem chi tiết</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- Item -->
+            <div class="col-md-4">
+                <a href="#" class="card-item d-md-flex">
+                    <div class="card-text">
+                        <span class="number">45</span>
+                        <p class="title">Danh sách<br />đơn đặt hàng mới</p>
+                    </div>
+                    <div class="card-icon ml-auto">
+                        <div>
+                            <i class="fas fa-shopping-basket icon"></i>
+                        </div>
+                        <span class="view-more">Xem chi tiết</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Item -->
+            <div class="col-md-4">
+                <a href="#" class="card-item d-md-flex">
+                    <div class="card-text">
+                        <span class="number">24/7</span>
+                        <p class="title">Trung tâm hỗ trợ<br />Chăm sóc khách hàng</p>
+                    </div>
+                    <div class="card-icon ml-auto">
+                        <div>
+                            <i class="fab fa-viber icon"></i>
+                        </div>
+                        <span class="view-more">Xem chi tiết</span>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div class="dashboard-chart">
+    <div class="container-fluid">
+        <div class="row d-md-flex">
+
+            <div class="col-md-8">
+                <div class="chart bg-white has-shadow">
+                    <canvas id="line-chart" width="800" height="450"></canvas>
+                </div>
+            </div>
+
+
+            <div class="col-md-4 ">
+
+                <div class="list-user bg-white has-shadow">
+                    <div class="list-user-header">
+                        <h2>Thành viên</h2>
+                    </div>
+                    <div class="list-user-body">
+                        <!-- Item -->
+                        <div class="item d-flex align-items-center">
+                            <div class="image">
+                                <img src="#" class="img-fluid rounded-circle">
+                            </div>
+                            <div class="text">
+                                <a href="#">
+                                    <h3>Tâm</h3>
+                                    <i class="fas fa-bowling-ball" style="color: green"></i>
+                                    <small>Online</small>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Item -->
+                        <div class="item d-flex align-items-center">
+                            <div class="image">
+                                <img src="#" class="img-fluid rounded-circle">
+                            </div>
+                            <div class="text">
+                                <a href="#">
+                                    <h3>Phan Công Huy</h3>
+                                    <i class="fas fa-bowling-ball" style="color: red"></i>
+                                    <small>Offline</small>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Item -->
+                        <div class="item d-flex align-items-center">
+                            <div class="image">
+                                <img src="#" class="img-fluid rounded-circle">
+                            </div>
+                            <div class="text">
+                                <a href="#">
+                                    <h3>Tiểu My</h3>
+                                    <i class="fas fa-bowling-ball" style="color: red"></i>
+                                    <small>Offline</small>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Assets/admin/js/jquery.datepicker.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.2.5/js/dataTables.select.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+    <script src="~/Assets/admin/js/Chart.min.js"></script>
+    <script>
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: [10, 20, 30, 40, 50, 60, 70, 80],
+                labels: ['1h', '4h', '7h', '10h', '13h', '16h', "19h", "22h"],
+                datasets: [{
+                    data: [25, 10, 30, 25, 50, 60, 55, 32, 12, 8],
+                    label: "Nhân viên",
+                    borderColor: "#3e95cd",
+                    fill: false
+                }
+                ]
+
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Thống kê truy cập trong ngày'
+                }
+            }
+        });
+    </script>
+    <script type="text/javascript">
+
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: [10, 20, 30, 40, 50, 60, 70, 80],
+                labels: ['1h', '4h', '7h', '10h', '13h', '16h', "19h", "22h"],
+                datasets: [{
+                    data: [25, 10, 30, 25, 50, 60, 55, 32, 12, 8],
+                    label: "Nhân viên",
+                    borderColor: "#3e95cd",
+                    fill: false
+                }
+                ]
+
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Thống kê truy cập trong ngày'
+                }
+            }
+        });
+    </script>
+
+}

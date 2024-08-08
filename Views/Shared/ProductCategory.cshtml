@@ -1,0 +1,49 @@
+﻿@*@model List<bandienthoai.Models.EF.LOAISANPHAM>
+
+    @foreach (var item in Model.Where(x => x.PARENTID == null))
+    {
+        var child = Model.Where(x => x.PARENTID == item.LOAISANPHAM_ID);
+        var parentClass = child.Count() > 0 ? " class=\"nav-link dropdown-toggle\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"" : "class=\"nav-link\"";
+        var parentClassli = child.Count() > 0 ? "dropdown" : "";
+        <li class="nav-item @parentClassli">
+            <a class="nav-link" href="/san-pham/@item.TEN_LOAISANPHAM-@item.LOAISANPHAM_ID" target="_parent" @parentClass>
+                <span>@item.TEN_LOAISANPHAM</span>
+            </a>
+            @if (child.Count() > 0)
+            {
+                <div class="dropdown-menu">
+                    @foreach (var itemchild in child)
+                    {
+                        <a class="dropdown-item" href="/san-pham/@itemchild.TEN_LOAISANPHAM-@itemchild.LOAISANPHAM_ID">@itemchild.TEN_LOAISANPHAM</a>
+                    }
+                </div>
+            }
+        </li>
+    }*@
+
+@model List<bandienthoai.Models.EF.LOAISANPHAM>
+
+<nav class="navbar navbar-expand-lg">
+    <ul class="navbar-nav">
+        @foreach (var item in Model.Where(x => x.PARENTID == null))
+        {
+            var child = Model.Where(x => x.PARENTID == item.LOAISANPHAM_ID);
+            var hasChild = child.Any();
+
+            <li class="nav-item @(hasChild ? "dropdown" : "")">
+                <a class="nav-link @(hasChild ? "dropdown-toggle" : "")" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @item.TEN_LOAISANPHAM
+                </a>
+                @if (hasChild)
+                {
+                    <div class="dropdown-menu">
+                        @foreach (var itemchild in child)
+                        {
+                            <a class="dropdown-item" href="/san-pham/@itemchild.TEN_LOAISANPHAM-@itemchild.LOAISANPHAM_ID">@itemchild.TEN_LOAISANPHAM</a>
+                        }
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+</nav>

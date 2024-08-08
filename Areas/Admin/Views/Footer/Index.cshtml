@@ -1,0 +1,76 @@
+﻿@model bandienthoai.Areas.Admin.Models.EF.FOOTER
+
+
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom">Sản Phẩm</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/Product/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a href="# "><button id="btn-add" type="submit" class="btn btn-default" onclick="submit.click()"><i class="fas fa-save"></i> Lưu</a></button></a>
+
+    </div>
+
+}
+@section jsFooter{
+  
+    <script>
+       // $("#txtContent").val("Data/");
+    </script>
+    <script>
+ 
+    var editor = CKEDITOR.replace("txtContent", {
+        customConfig: "/Assets/admin/js/plugins/ckeditor/config.js"
+
+    })
+
+    </script>
+    <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    </script>
+}
+@using (Html.BeginForm("SaveData", "Footer", FormMethod.Post, new { id = "frmCreate", name = "frmCreate", @class = "needs-validation" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form">
+
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="page-table">
+            <div class="container-fluid">
+                <div class="form-group">
+                    <textarea id="txtContent" name="txtContent" class="form-control" rows="20">
+@ViewBag.Footer
+                           </textarea>
+                </div>
+            </div>
+        </div>
+        <button id="submit" type="submit"class="btn d-none"></button>
+    </div>
+}
+
+

@@ -1,0 +1,147 @@
+﻿@model bandienthoai.Areas.Admin.Models.EF.SLIDE
+@{ ViewBag.Title = "Logo";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var listSlides = (List<bandienthoai.Areas.Admin.Models.EF.SLIDE>)ViewBag.listSlides;
+}
+@section Header{
+    <h2 class="no-margin-bottom text-info">Quản Lý Logo</h2>
+
+}
+@section jsFooter{
+
+    <script>
+        //Load table
+        $(document).ready(function () {
+            //AddNew();
+            //function AddNew() {
+            //    $("#form")[0].reset();
+            //    $("#BANNERID").val(0);
+
+            //    $("#ModalTitle").html("Thêm mới");
+            //    $("#MyModal").modal();
+
+            //}
+            //Show The Popup Modal For Edit Student Record
+
+
+            function EditRecord(Id) {
+                var url = "/NhaCungCap/GetListNCCByID?id=" + Id;
+                $("#ModalTitle").html("Chỉnh sửa");
+                $("#MyModal").modal("show");
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (data) {
+                        var obj = JSON.parse(data);
+
+                        $("#BANNERID").val(obj.ID_NCC);
+                        $("#MaNCC").val(obj.MANCC);
+                        $("#LinkHinh").val(obj.TEN_NCC);
+                        $("#Ghichu").val(obj.GHICHU_NCC);
+                        $("#GhiChu").val(obj.GhiChu_NCC);
+                        $("#Mota").val(obj.MOTA_NCC);
+                        $("#Diachi").val(obj.DIACHI_NCC);
+                    }
+                })
+
+            }
+            $("#SaveRecord").click(function () {
+
+                var data = $("#SubmitForm").serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: "SaveSlide",
+                    data: data,
+                    success: function (data) {
+
+
+                        window.location.href = "/Admin/Banner/Index";
+                        if (data != 1 && data != 2) {
+
+
+                            alert("Thất bại!");
+                        }
+
+
+
+                    },
+                    error: function () {
+                        alert("Lưu Thất Bại!");
+                    }
+                })
+
+
+            });
+        });
+    </script>
+    <script>
+        function selectImage() {
+            var finder = new CKFinder();
+            finder.selectActionFunction = function (url) {
+                $("#IMAGE").val(url);
+                $("#txtImage").attr("src", url);
+
+            }
+            finder.popup();
+            if ($('#txtImage').attr('src') != null) {
+
+            }
+
+        }
+
+
+    </script>
+    <script type="text/javascript">
+        $(window).on('load', function () {
+            $('#MyModal').modal('show');
+        });
+    </script>
+}
+@*Create A Popup Modal With Registration Form For Add Or Edit Record*@
+<div class="modal fade " id="MyModal">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="ModalTitle"></h4>
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+            </div>
+            <div class="modal-body">
+                <form id="form">
+                    <fieldset id="SubmitForm">
+                        @Html.HiddenFor(m => m.ID, new { @id = "BANNERID" })
+                        <div class="form-group">
+                            <div class="cms-form-content">
+
+
+                                <button class="btn btn-info mb-2" onclick="selectImage()">Chọn Hình</button>
+                                @Html.HiddenFor(m => m.IMAGE)
+
+                                <img id="txtImage" name="txtImage" class="mw-100" src="" />
+                                @Html.ValidationMessageFor(model => model.IMAGE, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.LINK, new { @id = "LinkHinh", @class = "form-control", @placeholder = "Link " })
+
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.GHICHU, new { @id = "GhiChu", @class = "form-control", @placeholder = "Ghi Chú" })
+                            @Html.HiddenFor(m => m.GHICHU)
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <a href="#" class="btn btn-block btn-danger" id="SaveRecord" data-dismiss="modal">Lưu</a>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

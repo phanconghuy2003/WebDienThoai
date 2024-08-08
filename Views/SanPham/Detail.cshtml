@@ -1,0 +1,449 @@
+﻿@model bandienthoai.Models.EF.SANPHAM
+@{
+    var ListImage = (List<bandienthoai.Models.EF.IMAGEPRODDUCT>)ViewBag.ListImage;
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Category = (bandienthoai.Models.EF.LOAISANPHAM)ViewBag.Category;
+    var RelatedProduct = (List<bandienthoai.Models.EF.SANPHAM>)ViewBag.RelatedProduct;
+    var Recommender = (List<bandienthoai.Models.EF.SANPHAM>)ViewBag.Recommender;
+    var Star = (List<int>)ViewBag.Star;
+}
+
+
+
+<div class="content ">
+    <div class="session group ">
+
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/san-pham/@Category.GHICHU_LOAISANPHAM-@Category.LOAISANPHAM_ID">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.TEN_SANPHAM</li>
+            </ol>
+        </nav>
+
+        <div class="primary-product row ">
+            <div class="col-md-6 col-12 col-product-slider">
+                @if (ListImage.Count > 0)
+                {
+
+                    <div class="image-block">
+                        <a class="fancybox"
+                           href="@ListImage[0].IMAGE">
+                            <img data-toggle="magnify" class="img-fluid"
+                                 src="@ListImage[0].IMAGE" />
+                        </a>
+                    </div>
+                    <div class="thumb-list">
+                        <div id="sliderproduct" class="owl-carousel owl-theme">
+                            @foreach (var item in ListImage)
+                            {
+                                <div class="item selected"
+                                     data-href="@item.IMAGE">
+                                    <img class="img-fluid"
+                                         src="@item.IMAGE" />
+                                </div>
+                            }
+
+
+
+                        </div>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="image-block">
+                        <a class="fancybox"
+                           href="@Model.HINHANH_SANPHAM">
+                            <img data-toggle="magnify" class="img-fluid"
+                                 src="@Model.HINHANH_SANPHAM" />
+                        </a>
+                    </div>
+                    <div class="thumb-list">
+                        <div id="sliderproduct" class="owl-carousel owl-theme">
+
+                            <div class="item selected"
+                                 data-href="@Model.HINHANH_SANPHAM">
+                                <img class="img-fluid"
+                                     src="@Model.HINHANH_SANPHAM" />
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+                }
+
+                <div class="notice-tragop">
+                    <a href="#" rel="nofollow">
+                        <img style="width: 100%" src="https://cellphones.com.vn/media/wysiwyg/1200x200_1.png" alt="TRẢ GÓP DỄ DÀNG - LỘC VÀNG VỀ TAY" title="TRẢ GÓP DỄ DÀNG - LỘC VÀNG VỀ TAY" width="auto" height="auto">
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-12 col-product-detail">
+                <h1 class="product-name">@Model.TEN_SANPHAM</h1>
+                <div class="social-sharing">
+                    <button type="button" class="btn btn-outline-danger btn-google-plus"
+                            onclick="javascript:OpenSocialSharing('google-plus', '@Model.TEN_SANPHAM', 'http://bachhoagiadung.net/banh-hong-binh-dinh-1-kg-984760.html')">
+                        <i class="fa fa-google-plus"></i> Google+
+                    </button>
+                    <button type="button" class="btn btn-outline-success btn-facebook"
+                            onclick="javascript:OpenSocialSharing('facebook', '@Model.TEN_SANPHAM', 'http://bachhoagiadung.net/banh-hong-binh-dinh-1-kg-984760.html')">
+                        <i class="fa fa-facebook"></i> Share
+                    </button>
+                    <button type="button" class="btn btn-twitter btn-outline-info"
+                            onclick="javascript:OpenSocialSharing('twitter', '@Model.TEN_SANPHAM', 'http://bachhoagiadung.net/banh-hong-binh-dinh-1-kg-984760.html')">
+                        <i class="fa fa-twitter"></i> Tweet
+                    </button>
+                </div>
+
+
+                <aside class="promotion_wrapper">
+                    <b id="promotion_header"><i class="fa fa-gift" aria-hidden="true"></i> Khuyến mãi</b>
+                    <div class="khuyenmai-info">
+                        <p>Sản phẩm kèm theo:<span class="text-bold">@Model.SPDIKEM</span></p>
+                        <p>Lượt xem:<span class="text-danger">@Model.LUOTXEM</span> Lượt</p>
+                        <input type="hidden" class="rating" id="rating" />
+
+                        <p>@Model.MOTA_SANPHAM</p>
+                        <select id="stateSelect" name="stateSelect">
+                            <option value="1">1 sao</option>
+                            <option value="2">2 sao</option>
+                            <option value="3">3 sao</option>
+                            <option value="4">4 sao</option>
+                            <option value="5">5 sao</option>
+                        </select>
+                        <button id="btnrating" data-id="@Model.SANPHAM_ID">Đánh giá</button>
+                        <div id="lt-promotion-pack"></div>
+                    </div>
+                </aside>
+
+
+
+                <div class="product-buy">
+
+                    <div class="price d-flex">
+
+                        <p class="special-price" style="display: block;">Giá bán: <span class="product-price" id="product-price">@(Model.GIA_SANPHAM != 0 ? (Model.GIA_SANPHAM - Model.GIA_SANPHAM * Model.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")&nbsp;</span></p><p class="old-price">Giá niêm yết : <span id="old-price-12780" style="text-decoration:line-through">@(Model.GIA_SANPHAM != 0 ? Model.GIA_SANPHAM.ToString("N0") + " VNĐ" : "")</span></p>
+
+                    </div>
+
+
+                    <div class="group btn-group w-100">
+                        <div class="container">
+                            <div class="d-flex justify-content-center">
+
+                                <div class="col-sm-6 col-12 ">
+                                    <a href="/them-gio-hang?ProductId=@Model.SANPHAM_ID&quantity=1" class="btn btn-primary w-100 p-2">MUA NGAY</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-12 ">
+                <div class="second-product group mt-3">
+                    <ul class="tabs group">
+                        <li class="active"><a role="tab" data-toggle="tab" href="#tab0">Chi tiết</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="tab0">
+                            @Html.Raw(@Model.NOIDUNG)
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="container">
+                <div class="section slideItem">
+                    <div class="RecommenderProduct">
+
+                        <div class="row">
+                            <div class="module-header">
+                                <div class="box-title">
+                                    <h2 class="title-head">Sản phẩm gợi ý</h2>
+
+                                </div>
+                            </div>
+
+                            <div class="owl-carousel owl-theme">
+                                @foreach (var item in Recommender)
+                                {
+                                    var url = "/chi-tiet/" + "-" + item.GHICHU_SANPHAM + "-" + item.SANPHAM_ID;
+                                    <div class="item">
+                                        <div class="product-item-box">
+                                            <div class="product-item">
+                                                <a class="product-image" href="@url" title="@item.TEN_SANPHAM  ">
+                                                    <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  "
+                                                         alt="@item.TEN_SANPHAM ">
+                                                    <noscript>
+                                                        <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  " alt="@item.TEN_SANPHAM  " />
+                                                    </noscript>
+
+                                                </a>
+
+                                                <div class="product-info has-menu-dots">
+                                                    <div class="info-left">
+                                                        <h2 class="product-title">
+                                                            <a href="@url" title="note 9">@item.TEN_SANPHAM</a>
+                                                        </h2>
+                                                    </div>
+                                                    <div class="info-right d-flex flex-column">
+                                                        <div class=" price">
+
+                                                            <span class="price-value"> @(item.GIA_SANPHAM != 0 ? (item.GIA_SANPHAM - item.GIA_SANPHAM * item.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")</span>
+                                                            <span class="price-old"> @(item.GIA_SANPHAM != 0 ? item.GIA_SANPHAM.ToString("N0") + " VNĐ" : "") </span>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="info-bottom">
+                                                        <div class="view">
+                                                            <span><i class="fa fa-eye" aria-hidden="true"></i></span>
+                                                            <span> @item.LUOTXEM lượt</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="add-cart">
+                                                        <a class="btn btn-cart" href="/them-gio-hang?ProductId=@item.SANPHAM_ID&quantity=1" title="Thêm giỏ hàng">
+                                                            <i class="fa fa-cart-plus"></i>
+                                                            <span>Thêm giỏ hàng</span>
+                                                        </a>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="d-flex justify-content-center w-100  m-3">
+                                <a class="btn btn-view-more btn-icon-right" href="#" title="Xem tất cả">
+                                    Xem tất cả
+                                    <span>
+                                        <i class="fa fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="section slideItem">
+                    <div class="RelatedProduct">
+
+                        <div class="row">
+                            <div class="module-header">
+                                <div class="box-title">
+                                    <h2 class="title-head">Sản phẩm tương tự</h2>
+                                    <div class="count-down" id="count-down-container" style="display:none">
+                                        <div class="count-down-value"><span id="days">-28</span>ngày</div>
+                                        <div class="count-down-value"><span id="hours">12</span>giờ</div>
+                                        <div class="count-down-value"><span id="minutes">58</span>phút</div>
+                                        <div class="count-down-value"><span id="seconds">31</span>giây</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="owl-carousel owl-theme">
+                                @foreach (var item in RelatedProduct)
+                                {
+                                    var url = "/chi-tiet/" + "-" + item.GHICHU_SANPHAM + "-" + item.SANPHAM_ID;
+                                    <div class="item">
+                                        <div class="product-item-box">
+                                            <div class="product-item">
+                                                <a class="product-image" href="@url" title="@item.TEN_SANPHAM  ">
+                                                    <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  "
+                                                         alt="@item.TEN_SANPHAM ">
+                                                    <noscript>
+                                                        <img class="card-img" src="@item.HINHANH_SANPHAM" title="@item.TEN_SANPHAM  " alt="@item.TEN_SANPHAM  " />
+                                                    </noscript>
+
+                                                </a>
+
+                                                <div class="product-info has-menu-dots">
+                                                    <div class="info-left">
+                                                        <h2 class="product-title">
+                                                            <a href="@url" title="note 9">@item.TEN_SANPHAM</a>
+                                                        </h2>
+                                                    </div>
+                                                    <div class="info-right d-flex flex-column">
+                                                        <div class=" price">
+
+                                                            <span class="price-value"> @(item.GIA_SANPHAM != 0 ? (item.GIA_SANPHAM - item.GIA_SANPHAM * item.KHUYENMAI / 100).ToString("N0") + " VNĐ" : "Liên Hệ")</span>
+                                                            <span class="price-old"> @(item.GIA_SANPHAM != 0 ? item.GIA_SANPHAM.ToString("N0") + " VNĐ" : "") </span>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="info-bottom">
+                                                        <div class="view">
+                                                            <span><i class="fa fa-eye" aria-hidden="true"></i></span>
+                                                            <span> @item.LUOTXEM lượt</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="add-cart">
+                                                        <a class="btn btn-cart" href="/them-gio-hang?ProductId=@item.SANPHAM_ID&quantity=1" title="Thêm giỏ hàng">
+                                                            <i class="fa fa-cart-plus"></i>
+                                                            <span>Thêm giỏ hàng</span>
+                                                        </a>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="d-flex justify-content-center w-100  m-3">
+                                <a class="btn btn-view-more btn-icon-right" href="#" title="Xem tất cả">
+                                    Xem tất cả
+                                    <span>
+                                        <i class="fa fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section js{
+
+    <script>
+        $('.slideItem .owl-carousel').owlCarousel({
+            loop: true,
+            margin: 10,
+            nav: true,
+
+            autoplay: true,
+
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
+            responsive: {
+                0: {
+                    items: 2
+                },
+                600: {
+                    items: 3
+                },
+                1000: {
+                    items: 5
+                }
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(".fancybox").fancybox();
+    </script>
+    <script>
+
+        var user = {
+            unit: function () {
+                user.regEvents();
+            },
+            regEvents: function () {
+                $("#btnrating").off('click').on('click', function () {
+                    var id = parseInt($("#stateSelect").val());
+                    var idsp = parseInt($("#btnrating").data("id"));
+                    if (id != '') {
+                        user.loadDistrict(id,idsp)
+                    }
+                    else {
+                        $('#District').html('');
+                    }
+                });
+            },
+            
+            loadDistrict: function (id,idsp) {
+
+                $.ajax({
+                    url: '/SanPham/addRating',
+                    type: "POST",
+                    dataType: "json",
+                    data: { id: id,idsp:idsp },
+                    success: function (res) {
+                        if (res.status == true) {
+                            
+                        }
+                    }
+                });
+            }
+        }
+        user.unit();
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#rating").rating();
+            $("#txtSoLuong").keyup(function () {
+                if (isNaN($("#txtSoLuong").val()) || $("#txtSoLuong").val() <= 0 || $("#txtSoLuong").val().trim().length == 0) {
+                    $("#txtSoLuong").val(1);
+                }
+                var SoLuong = parseInt($("#txtSoLuong").val());
+                var GiaBan = 95000;
+                $("#total-money").text(FormatNumber(GiaBan * SoLuong) + " đ");
+            });
+
+            $("#sliderproduct").owlCarousel({
+                items: 4,
+                loop: false,
+                nav: true,
+                navText: ["&lsaquo;", "&rsaquo;"],
+                dots: false,
+                slideSpeed: 300,
+                paginationSpeed: 400,
+                afterAction: syncPosition
+            }).on('click', '.owl-item', function (e) {
+                e.preventDefault();
+                setSelectedItem($(this).index());
+            });
+
+            function setSelectedItem(number) {
+                $("#sliderproduct .item").removeClass('selected');
+
+                var selectedItem = $("#sliderproduct").find(".owl-item").eq(number).find(".item").eq(0);
+
+                if (selectedItem != undefined) {
+                    selectedItem.addClass("selected");
+                    $(".image-block a").attr("href", selectedItem.attr("data-href"));
+                    $(".image-block img").attr("src", selectedItem.attr("data-href"));
+                    $(".image-block img").magnify();
+                }
+            }
+
+            function syncPosition(el) {
+                var current = this.currentItem;
+                setSelectedItem(current);
+            }
+
+        });
+
+        function BuyNowProduct(IDSanPham) {
+            $("#hdIDSanPhamCanMua").val(IDSanPham);
+            $("#hdSoLuongSanPham").val($("#txtSoLuong").val());
+            $("#frmGioHang").submit();
+        }
+        function AddProduct(IDSanPham) {
+            var SoLuong = $("#txtSoLuong").val();
+            AddSanPhamToGioHang(IDSanPham, SoLuong);
+        }
+
+    </script>
+}
+

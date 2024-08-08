@@ -1,0 +1,55 @@
+﻿@model bandienthoai.Models.EF.ORDER
+@{
+    ViewBag.Title = "Success";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-main">
+
+    <div class="success-wrap">
+        <div class="left">
+            <a href="/"><i class="fa fa-chevron-left"></i> Tiếp tục tìm kiếm sản phẩm</a>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="module">
+        <h1 style="color: #2e7d32; display: block; text-align: center; font-size: 24px;">Đặt hàng thành công</h1>
+    </div>
+    <div class="module" style="border: solid 1px #eee; background: #fff; padding: 10px;">
+        <p>Cảm ơn Quý khách hàng đã chọn mua hàng tại Mobile Shop. Trong<b> 30 phút</b>, Mobile Shop sẽ <b>SMS hoặc Gọi</b> để xác nhận đơn hàng.</p>
+        <p>* Các đơn hàng từ <b> 21h tối tới 9h</b> sáng hôm sau, Mobile Shop sẽ liên hệ với Quý khách trước 12h trưa cùng ngày.</p>
+        <p>Nếu anh/chị cần tư vấn, trợ giúp vui lòng gọi <strong>089.8168.871</strong>. Xin cám ơn !</p>
+        <strong style="margin-top: 20px;">Thông tin đặt hàng</strong>
+        <div style="background: rgba(65, 166, 116, 0.15); padding: 10px; border: solid 1px #eee; margin-top: 10px;">
+            Số đơn hàng: <strong>@Model.ID</strong>
+            <br>
+            Khách hàng : <strong>@Model.SHIPNAME</strong>
+            <br>
+            Số điện thoại: <strong>@Model.SHIPMOBILE</strong>
+            <br>
+            Email: <strong>@Model.SHIPEMAIL</strong>
+            <br>
+            Địa chỉ nhận hàng: <strong>@Model.SHIPDDRESS</strong>
+            <br>
+           
+            Hình thức thanh toán: <strong>Thanh toán khi nhận hàng</strong>
+            <br>
+            Trạng thái thanh toán: <strong>Chưa thanh toán</strong>
+            <br>
+            <strong style="color: #e11b1e;">* Lưu ý: Khuyến mại chỉ được giữ trong vòng 24H kể từ khi đặt hàng. Quá 24H sẽ áp dụng giá mới tại thời điểm đó</strong>
+        </div>
+  
+      
+        <div class="module" style="text-align: center; margin-bottom: 10px;">
+            <a href="/" class="btn btn-info mt-2">Quay lại trang chủ</a>
+        </div>
+    </div>
+
+
+    <style>
+        .price-box {
+            margin: 0px !important;
+        }
+    </style>
+</div>
+

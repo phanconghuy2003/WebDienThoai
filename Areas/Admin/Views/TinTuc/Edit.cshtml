@@ -1,0 +1,124 @@
+﻿@model bandienthoai.Areas.Admin.Models.EF.TINTUC
+
+@{
+                /**/
+
+                ViewBag.Title = "Create";
+                Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom">Chỉnh Sửa Tin Tức</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/TinTuc/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a href="# "><button id="btn-add" type="submit" class="btn btn-default"><i class="fas fa-plus"></i> Tạo Mới</a></button></a>
+
+    </div>
+}
+@section jsFooter{
+
+    <script>
+
+        function checkEmpty(id) {
+            var tmp = document.getElementById(id);
+            if (tmp.value == "" || tmp.value == null) {
+                return true;
+            }
+
+            return false;
+        }
+        function showIsEmpty(id) {
+            if (checkEmpty(id)) {
+                document.getElementById(id).focus();
+                return;
+            }
+        }
+    </script>
+    <script>
+        function selectImage() {
+            var finder = new CKFinder();
+            finder.selectActionFunction = function (url) {
+                $("#HINHANH_TINTUC").val(url);
+                $("#txtImage").attr("src", url);
+
+            }
+            finder.popup();
+            if ($('#txtImage').attr('src') != null) {
+
+            }
+
+        }
+        var editor = CKEDITOR.replace("txtContent", {
+            customConfig: "/Assets/admin/js/plugins/ckeditor/config.js"
+
+        })
+
+    </script>
+
+}
+@using (Html.BeginForm("Edit", "TinTuc", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form">
+
+        <div class="card-custom card">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+            <div class="cms-form-row">
+                @Html.LabelFor(model => model.TIEUDE_TINTUC, htmlAttributes: new { @class = "cms-form-label col-form-label" })
+                <div class="cms-form-content">
+                    @Html.TextBoxFor(model => model.TIEUDE_TINTUC, new { @class = "mr-2 form-width-default ng-untouched ng-pristine ng-valid" })
+                    @Html.ValidationMessageFor(model => model.TIEUDE_TINTUC, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="cms-form-row">
+                @Html.LabelFor(model => model.MOTA_TINTUC, htmlAttributes: new { @class = "cms-form-label col-form-label" })
+                <div class="cms-form-content">
+                    @Html.TextBoxFor(model => model.MOTA_TINTUC, new { @class = "mr-2 form-width-default ng-untouched ng-pristine ng-valid" })
+                    @Html.ValidationMessageFor(model => model.MOTA_TINTUC, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="cms-form-row">
+
+               
+
+                <div class="cms-form-content">
+                    <div class="box-add-img " onclick="selectImage()">
+                        <div class="box-add">  <img id="txtImage" name="txtImage" src="@Model.HINHANH_TINTUC" /></div>
+                        @Html.HiddenFor(m => m.HINHANH_TINTUC)
+                    </div>
+                    @*@Html.TextBoxFor(model => model.HINHANH_TINTUC, new { @class = "mr-2 form-width-default ng-untouched ng-pristine ng-valid", id = "txtLinkImage" })*@
+
+                    @Html.ValidationMessageFor(model => model.HINHANH_TINTUC, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="cms-form-row">
+                @Html.LabelFor(model => model.GHICHU_TINTUC, htmlAttributes: new { @class = "cms-form-label col-form-label" })
+                <div class="cms-form-content">
+                    @Html.TextBoxFor(model => model.GHICHU_TINTUC, new { @class = "mr-2 form-width-default ng-untouched ng-pristine ng-valid" })
+                    @Html.ValidationMessageFor(model => model.GHICHU_TINTUC, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="cms-form-row">
+                @Html.LabelFor(model => model.NOIDUNG, htmlAttributes: new { @class = "cms-form-label col-form-label" })
+                <div class="cms-form-content">
+                    @Html.TextAreaFor(model => model.NOIDUNG, new { @class = "mr-2 form-width-default ng-untouched ng-pristine ng-valid", id = "txtContent" })
+                    @Html.ValidationMessageFor(model => model.NOIDUNG, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="cms-form-row">
+                <div class="col-md-offset-2 cms-form-content">
+                    <input type="submit" value="ok" class="btn btn-default" id="btncreate" onsubmit="showIsEmpty(this.id)" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

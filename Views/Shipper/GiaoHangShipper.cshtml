@@ -1,0 +1,118 @@
+﻿@model bandienthoai.Models.EF.ORDER
+@{
+    Layout = "~/Views/Shared/_Shipper.cshtml";
+    var listDetail = (List<bandienthoai.Models.ShipperDetailOrderModel>)ViewBag.ListDetailOrder;
+}
+
+@section js{
+    <script>
+        var cart = {
+            init: function () {
+                cart.regEvents();
+            },
+            regEvents: function () {
+               
+              
+                // xóa từng sản phẩm
+                $('#btnhoanthanh').off('click').on('click', function (e) {
+
+                    e.preventDefault();
+                    $.ajax({
+                        url: '/Shipper/UpdateOrder?id=' + $(this).data('id'),
+
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (res) {
+                            if (res.status == true) {
+                                window.location.href = "/Shipper/index";
+                            }
+
+                        }
+                    });
+                });
+            }
+        }
+        cart.init();
+    </script>
+}
+<div class="row w-100">
+    <div class="col-8">
+        <h2 class="text-danger" style="font-size:18px;font-weight:700">Chi tiết đơn hàng</h2>
+    </div>
+    <div class="col-2">
+        <a class=" btn btn-danger" href="/Shipper/Logout"><i class="fa fa-sign-out"></i></a>
+    </div>
+    <div class="col-2">
+        <a class=" btn btn-primary" title="Về trang chủ" href="/Shipper/Index"><i class="fa fa-home"></i></a>
+    </div>
+</div>
+<div class="content">
+    @if (Model!=null)
+    {
+    <div class="table-responsive-sm">
+        <table class="table table-striped" style="font-size:13px">
+            <thead>
+
+            <th width="30%"></th>
+
+            <th width="70%"></th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Đơn hàng</td>
+                    <td>@Model.ID</td>
+                </tr>
+                @if (listDetail!=null){ 
+                    foreach (var item in listDetail)
+                    {
+                        <tr>
+
+                            <td colspan="2">
+                                <p>
+                                    <span>Tên sản phẩm:</span>
+                                    <span>@item.NameProduct</span>
+                                </p>
+                                <p>
+                                    <span>Số lượng:</span>
+                                    <span>@item.Soluong</span>
+                                </p>
+                                <p>
+                                    <span>Thành tiền:</span>
+                                    <span>@(item.Price * item.Soluong)</span>
+                                </p>
+
+                            </td>
+                        </tr>
+                    }
+                }
+
+                <tr>
+                    <td>Địa chỉ</td>
+                    <td>
+                        <p class="m-1"><span><i class="fa fa-map-marker" style="color:blue"></i>  &nbsp;Điểm nhận: &nbsp;</span>(Mobile Shop)140 Lê Trọng Tấn</p>
+                        <p class="m-1"><span><i class="fa fa-map-marker" style="color:red"></i> &nbsp;Điểm giao: &nbsp;</span>@Model.SHIPDDRESS</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tên khách hàng: </td>
+                    <td>@Model.SHIPNAME</td>
+                </tr>
+                <tr>
+                    <td>Email: </td>
+                    <td>@Model.SHIPEMAIL</td>
+                </tr>
+
+                <tr>
+                    <td>SĐT: </td>
+                    <td>@Model.SHIPMOBILE</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <div class="col-12 text-center"><a href="#" class="btn btn-info btn-submit w-50 mb-3" id="btnhoanthanh" data-id="@Model.ID">Hoàn thành</a></div>
+    </div>
+    }
+</div>
+
+
+

@@ -1,0 +1,394 @@
+﻿@using bandienthoai.Areas.Admin.Models
+@model List<SanPhamModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom">Quản Lý Sản Phẩm</h2>
+    <div class="page-button ml-auto">
+        <a href="/Admin/Home/Index"><button id="btn-back" type="button" class="btn btn-default"><i class="fas fa-arrow-left"></i> Trở Về</button></a>
+        <a href="/Admin/Product/Create"><button id="btn-add" type="button" class="btn btn-default"><i class="fas fa-plus"></i> Tạo Mới</a></button></a>
+
+    </div>
+}
+
+<div class="input-group-box">
+
+
+    @using (Html.BeginForm("Index", "Product", FormMethod.Get))
+    {
+        if (Model != null)
+        {
+            <div class="container">
+                <div class="row">
+                    <div class="col col-4">
+                        <div class="input-item">
+                            <div class="form-group">
+                                <p>Sắp xếp theo giá</p>
+                                <select id="sortPrice" class="form-control">
+                                    <option value="asc">Tăng dần</option>
+                                    <option value="desc">Giảm dần</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="col col-4">
+                            <div class="input-item">
+
+                                <div class="input-group">
+                                    <p></p>
+                                    <input type="text" class="form-control" name="date" id="date" data-select="datepicker" data-locked="25/12/2014;1/1/2015" data-toggle="datepicker">
+                                    <span class="input-group-btn"><button type="button" class="btn btn-primary" data-toggle="datepicker"><i class="fas fa-calendar-alt"></i></button></span>
+                                </div>
+                            </div>
+                        </div>*@
+                    @*<div class="col col-4">
+                            <div class="input-item">
+                                <div class="form-group">
+                                    <p>Nhà cung cấp</p>
+                                    @Html.DropDownList("ID_NCC", (IEnumerable<SelectListItem>)ViewBag.ID_NCC, "--select--", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-4">
+                            <div class="input-item">
+
+                                <div class="form-group">
+                                    <p>Loại Sản Phẩm</p>
+                                    @Html.DropDownList("LOAISANPHAM_ID", (IEnumerable<SelectListItem>)ViewBag.LOAISANPHAM_ID, "--select--", new { @class = "form-control" })
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col col-4">
+                            <div class="input-item">
+                                <div class="form-group">
+                                    <p>Tìm kiếm</p>
+
+                                    <input class="form-control" type="text" id="txtSearch" placeholder="Tìm kiếm" />
+                                </div>
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+
+            <div class="page-table">
+                <div class="container-fluid">
+                    <table id="customer_data" class="table table-striped table-bordered">
+                        <thead id="list-header">
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Tên sản phẩm</th>
+                                <th scope="col">Loại sản phẩm</th>
+                                <th scope="col">Nhà cung cấp</th>
+                                <th scope="col">Mô tả</th>
+                                <th scope="col">Hình ảnh</th>
+                                <th scope="col">Đơn giá</th>
+                                <th scope="col">Số lượng tồn</th>
+                                <th scope="col">Giảm Giá</th>
+                                <th scope="col">Trạng thái</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+
+                                <tr id="row_@item.ID" class="Search">
+                                    <td><p></p></td>
+
+
+                                    <td class="SearchName"><p>@item.TENSANPHAM</p></td>
+                                    <td><p>@item.LOAISANPHAM</p></td>
+                                    <td><p>@item.NCC</p></td>
+                                    <td><p>@item.MOTA</p></td>
+
+
+                                    <td>
+                                        <div style="width:100px;height:100px; border:2px solid #e2d4d4;background:#fff;">
+                                            <img id="img_@item.ID" style="cursor:pointer;height:100%;width:100%" src="@item.HINHANH"
+                                                 onclick="selectImage('changeImage/@item.ID',this.id)" />
+                                        </div>
+                                    </td>
+                                    <td><p>@item.GIASANPHAM</p></td>
+                                    <td><p>@item.SOLUONGTON</p></td>
+                                    <td><p>@item.KHUYENMAI</p></td>
+                                    <td><a href="#" class="btn-active" data-id="@item.ID">@Html.Raw(item.TRANGTHAI ? "Hoạt động" : "Khoá")</a></td>
+
+                                    <td class="d-flex justify-content-center td-button">
+                                        <button id="btn-del" type="button" class="btn btn-default">
+
+                                            @Html.Raw(@Ajax.ActionLink("[replacetext]", "Delete", new { id = item.ID }, new AjaxOptions
+                                       {
+                                           Confirm = "Bạn có muốn xóa?",
+                                           OnComplete = "$('#row_" + @item.ID + "'" + ").remove()",
+                                           HttpMethod = "Delete"
+                                       }).ToHtmlString().Replace("[replacetext]", "<i class='fas fa-trash-alt'></i>"))
+                                        </button>
+
+                                        <a href="/Admin/Product/Update/@item.ID">
+                                            <button id="btn-edit" type="button" class="btn btn-default">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+        }
+
+    }
+</div>
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/Assets/admin/js/Controllers/ChangeStatus.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            var t = $('#customer_data').DataTable({
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[1, 'asc']]
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+            $("#list-header").on({
+                mouseenter: function () {
+                    $(this).css("background-color", "lightgray");
+                },
+                mouseleave: function () {
+                    $(this).css("background-color", "lightblue");
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function filterGlobal() {
+            $('#customer_data').DataTable().search(
+                $('#ID_NCC option:selected').text(),
+
+            ).draw();
+        }
+
+        function filterColumn(i) {
+            $('#customer_data').DataTable().column(i).search(
+                $('#col' + i + '_filter').val(),
+
+            ).draw();
+        }
+
+        $(document).ready(function () {
+            $('#customer_data').DataTable();
+
+            $('input.global_filter').on('keyup click', function () {
+                filterGlobal();
+            });
+
+            $('input.column_filter').on('keyup click', function () {
+                filterColumn($(this).parents('tr').attr('data-column'));
+            });
+        });
+    </script>
+    <script>
+        function Contains(txt1, txt2) {
+
+            if (txt1.indexOf(txt2) != -1) {
+
+                return true;
+            }
+        }
+        $(document).ready(function () {
+
+            $("#txtSearch").keyup(function () {
+                var txtSearch = $("#txtSearch").val().toLowerCase();
+
+                $(".Search").each(function () {
+                    if (!Contains($(this).text().toLowerCase(), txtSearch)) {
+                        $(this).hide();
+
+                    }
+                    else {
+                        $(this).show();
+
+                    }
+                });
+
+            });
+        });
+    </script>
+    <script>
+        function fillerByNCC() {
+            var filter, table, tr, td, i, txtValue;
+
+            filter = $("#ID_NCC option:selected").text().toUpperCase();
+            table = document.getElementById("customer_data");
+
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+
+        }
+        function fillerBytypeProduct() {
+            var filter, table, tr, td, i, txtValue;
+
+            filter = $("#LOAISANPHAM_ID option:selected").text().toUpperCase();
+            table = document.getElementById("customer_data");
+
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[3];
+
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+
+        }
+
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#ID_NCC").change(function () {
+                fillerByNCC()
+            });
+            $("#LOAISANPHAM_ID").change(function () {
+                fillerBytypeProduct()
+            });
+
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#sortPrice').change(function () {
+                var order = $(this).val(); 
+                var column = 6; 
+
+                $('#customer_data').DataTable().order([column, order]).draw();
+            });
+
+            var t = $('#customer_data').DataTable({
+                "columnDefs": [
+                    { "searchable": false, "orderable": false, "targets": 0 }
+                ],
+                "order": [[1, 'asc']]
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+    </script>
+    @*<script type="text/javascript" language="javascript">
+            $(document).ready(function () {
+
+
+
+                function fill_datatable(ID_NCC = '', LOAISANPHAM_ID = '') {
+                    var dataTable = $('#customer_data').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "order": [],
+                        "searching": true,
+
+                        "ajax": {
+                            url: "Filter",
+                            type: "POST",
+                            data: {
+
+                                nsx: ID_NCC,
+                                loaisp: LOAISANPHAM_ID
+                            }
+                        }
+                    });
+                }
+
+                $('#filter').click(function () {
+                    var ID_NCC = $('#ID_NCC').val()
+                    var LOAISANPHAM_ID = $('#LOAISANPHAM_ID').val();
+                    if (ID_NCC >= 0 || LOAISANPHAM_ID >= 0) {
+
+                        $('#customer_data').DataTable().destroy();
+
+                        fill_datatable(LOAISANPHAM_ID, LOAISANPHAM_ID);
+                    }
+                    else {
+                        alert('Tìm kiếm theo điều kiện');
+                        $('#customer_data').DataTable().destroy();
+                        fill_datatable();
+                    }
+                });
+
+
+            });
+
+        </script>*@
+    <script>
+        function selectImage(action, id) {
+            var finder = new CKFinder();
+            finder.selectActionFunction = function (fileUrl) {
+
+                $.ajax({
+                    method: "GET",
+                    url: action,
+                    data: { picture: fileUrl }
+                }).done(function (path) {
+                    if (path != '') {
+                        alert("Lỗi cập nhật ảnh:" + path);
+                    }
+                    else {
+                        $("#" + id).attr("src", fileUrl);
+                    }
+
+                });
+
+            }
+            finder.popup();
+        }
+    </script>
+}
+

@@ -1,0 +1,658 @@
+﻿@using bandienthoai.Areas.Admin.Models.EF
+@model List<ORDER>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section Header{
+    <h2 class="no-margin-bottom text-info ">Quản Lý Đơn Hàng</h2>
+    <div class="page-button ml-auto">
+
+        
+
+        <a href="#" id="btnInDon" class="btn btn-outline-warning"><i class="fas fa-print"></i> In Đơn Hàng</a>
+        <a href="#" id="btnChoDuyet" class="btn btn-outline-primary"><i class="far fa-envelope"></i> Chờ Duyệt</a>
+        <a href="#" id="btnDaDuyet" class="btn btn-outline-info"><i class="far fa-envelope"></i> Đã Duyệt</a>
+        <a href="#" id="btnThanhToan" class="btn btn-outline-success"><i class="fas fa-credit-card"></i> Đã Thanh Toán</a>
+        <a href="#" id="btnChuaThanhToan" class="btn btn-outline-success"><i class="fas fa-credit-card"></i> Chưa Thanh Toán</a>
+        <a href="#" id="btnDelete" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Xóa</a>
+        <a href="/Admin/Home/Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Trở Về</a>
+    </div>
+}
+
+    <div class="input-group-box">
+
+
+        @using (Html.BeginForm("Index", "DonHang", FormMethod.Get))
+        {
+            <div class="container">
+                <div class="row">
+
+
+          
+                    <div class="col col-4">
+                        <div class="input-item" style="display:none">
+                            <div class="form-group">
+                                <p>Tìm kiếm</p>
+
+                                <input class="form-control" type="text" id="txtSearch" placeholder="Tìm kiếm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="page-table">
+                <div class="container-fluid">
+                    <table id="customer_data" class="table table-striped table-bordered">
+                        <thead id="list-header">
+                            <tr>
+                                <th><input type="checkbox" id="checkall" /></th>
+                                <th scope="col">STT</th>
+
+                                <th scope="col">Số Hóa Đơn</th>
+
+                                <th scope="col">Họ Tên</th>
+                                <th scope="col">Địa Chỉ</th>
+                                <th scope="col">Thông Tin Liên Hệ</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Ngày tạo</th>
+                                <th scope="col">Thanh toán</th>
+                                <th scope="col">Trạng thái</th>
+
+
+                                <th>Chi Tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+
+                            <tr id="row_@item.ID" class="Search">
+                                <td><input type="checkbox" value="@item.ID" class="record" /></td>
+                                <td><p></p></td>
+                                <td><p>@item.ID</p></td>
+                                <td class="SearchName"><p>@item.SHIPNAME</p></td>
+
+                                <td><p>@item.SHIPDDRESS</p></td>
+                                <td><p>@item.SHIPMOBILE</p></td>
+                                <td><p>@item.SHIPEMAIL</p></td>
+                                <td><p>@item.CREATEDATE</p></td>
+                                <td><p id="tt_@item.ID">@(item.IS_DELETE==true?"Đã thanh toán": "Chưa thanh toán")</p></td>
+
+                                <td>
+                                    <p class="btn-active" data-id="@item.ID" id="hd_@item.ID">
+                                        @{if (item.STATUS == 2)
+                                            {
+                                                <i class='far fa-envelope'></i>
+                                                <span>Đã Duyệt</span>
+                                            }
+                                            else if (item.STATUS == 3)
+                                            {
+                                                <i class='fas fa-credit-card'></i>
+                                                <span>Đã thanh toán</span>
+                                            }
+
+                                            else if (item.STATUS == 5)
+                                            {
+                                                <i class='fas fa-credit-card'></i>
+                                                <span>Đang giao</span>
+                                            }
+                                            else if (item.STATUS == 6)
+                                            {
+                                                <i class='fas fa-credit-card'></i>
+                                                <span>Đã giao hàng</span>
+                                            }
+                                            else
+                                            {
+                                                <i class='far fa-envelope'></i>
+                                                <span>Chờ duyệt</span>
+                                            }
+                                        }
+                                    </p>
+                                </td>
+
+                                <td>
+                                    <a type="button" class="btn btn-info" href="javascript:DetailOrder(@item.ID,'@item.SHIPNAME',@item.SHIPMOBILE,'@item.SHIPEMAIL','@item.SHIPDDRESS')">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+
+                                </td>
+                            </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+            @*Create A Popup Modal With Registration Form For delete Record*@
+            <div class="modal fade" id="DeleteConfim">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 id="ModalTitle"></h4>
+                            <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                        </div>
+                        <div class="modal-body">
+                            <h4>Bạn Có Chắc Muốn xóa?</h4>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i></a>
+                            <a href="#" class="btn btn-danger" id="btnxacnhan"><i class="fas fa-check"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="DetailOrder">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 id="ModalTitle">Thông tin đơn hàng</h4>
+
+                            <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+                        </div>
+                        <div class="modal-body">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Khách hàng</td>
+                                        <td id="infoName"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Đơn hàng</td>
+                                        <td id="infoID"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SĐT</td>
+                                        <td id="infoSdt"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email</td>
+                                        <td id="infoEmail"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Địa chỉ</td>
+                                        <td id="infoDiaChi"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h4>Danh sách sản phẩm</h4>
+                          <table>
+                              <thead>
+                                  <tr>
+
+                                      <th width="300px">Sản phẩm</th>
+                                      <th width="300px">Số lương</th>
+                                      <th width="300px">Giá tiền</th>
+                                      <th width="300px">Khuyến mãi</th>
+                                  </tr>
+                              </thead>
+                              <tbody id="setTkList">
+                                  
+                              </tbody>
+                          </table>
+                          <p>Thành tiền:<span id="TotalPrice" class="text-danger text-bold"></span></p>
+                        </div>
+
+                        <div class="modal-footer">
+                            
+                            <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i>Hủy</a>
+                       </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+@section jsFooter{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/Assets/admin/js/Controllers/ChangeStatus.js"></script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+
+
+
+            var t = $('#customer_data').DataTable({
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[1, 'asc']],
+                "language": {
+
+                    "sSearch": "Tìm kiếm:",
+                    "sEmptyTable": "Không có dữ liệu trong bảng",
+                    "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "sInfoEmpty": "Hiển thị 0 tới 0 của 0 Phần tử",
+                    "sInfoFiltered": "(filtered from _MAX_ total entries)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ",",
+                    "sLengthMenu": "Hiển thị _MENU_ Phần tử",
+                    "sLoadingRecords": "Loading...",
+                    "sProcessing": "Processing...",
+                    "sZeroRecords": "No matching records found",
+                    "oPaginate": {
+                        "sFirst": "Trang đầu",
+                        "sLast": "Trang cuối",
+                        "sNext": "Trang sau",
+                        "sPrevious": "Trang trước"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": activate to sort column ascending",
+                        "sSortDescending": ": activate to sort column descending"
+                    }
+                }
+            });
+
+            t.on('order.dt search.dt', function () {
+                t.column(1, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+            $("#list-header").css("background-color", "lightblue");
+            $("#list-header").on({
+                mouseenter: function () {
+                    $(this).css("background-color", "lightgray");
+                },
+                mouseleave: function () {
+                    $(this).css("background-color", "lightblue");
+                }
+            });
+
+        });
+    </script>
+
+    @*
+        <script>
+            function filterGlobal() {
+                $('#customer_data').DataTable().search(
+                    $('#TRANGTHAI option:selected').text(),
+
+                ).draw();
+            }
+
+            function filterColumn(i) {
+                $('#customer_data').DataTable().column(i).search(
+                    $('#col' + i + '_filter').val(),
+
+                ).draw();
+            }
+
+            $(document).ready(function () {
+                $('#customer_data').DataTable();
+
+                $('input.global_filter').on('keyup click', function () {
+                    filterGlobal();
+                });
+
+                $('input.column_filter').on('keyup click', function () {
+                    filterColumn($(this).parents('tr').attr('data-column'));
+                });
+            });
+        </script>*@
+    @*search*@
+
+    <script>
+        function Contains(txt1, txt2) {
+
+            if (txt1.indexOf(txt2) != -1) {
+
+                return true;
+            }
+        }
+        $(document).ready(function () {
+
+            $("#txtSearch").keyup(function () {
+                var txtSearch = $("#txtSearch").val().toLowerCase();
+
+                $(".Search").each(function () {
+                    if (!Contains($(this).text().toLowerCase(), txtSearch)) {
+                        $(this).hide();
+
+                    }
+                    else {
+                        $(this).show();
+
+                    }
+                });
+
+            });
+        });
+        
+    </script>
+    @* Get detail *@
+    <script>
+        function DataBind(TkList) {
+            var total = 0;
+            $("#setTkList").empty();
+            var setData = $("#setTkList");
+            for (var i = 0; i < TkList.length; i++) {
+                total += (TkList[i].Price * TkList[i].Quantity) - ((TkList[i].Price * TkList[i].Quantity) * TkList[i].Promotion/100);
+                var data = "<tr id='" + TkList[i].ID+"'>" +
+             
+                   
+                    "<td>" + TkList[i].NameProduct + "</td>" +
+                    "<td>" + TkList[i].Quantity + "</td>" +
+                    "<td>" + TkList[i].Price + "</td>" +
+               
+                    "<td>" + TkList[i].Promotion + "</td>" +
+                  
+                  "</tr>";
+                setData.append(data);
+              
+            }
+          
+            $("#TotalPrice").text(+total+" VNĐ");
+        }
+        function DetailOrder(id, name, sdt, email, addres) {
+            $("#infoName").text(name);
+            $("#infoID").text(id);
+            $("#infoSdt").text(sdt);    
+            $("#infoEmail").text(email);
+            $("#infoDiaChi").text(addres);
+          
+            $.ajax({
+                url: 'DetailOrder',
+                data: { id:id },
+                dataType: 'json',
+                type: 'POST',
+                success: function (res) {
+
+                    $("#ModalTitle").text("Thông tin sản phẩm");
+            
+                    DataBind(res);
+                  
+                        $("#DetailOrder").modal("show");
+                
+
+                }
+            });
+        }
+    </script>
+    <script>
+        function fillerByStatus() {
+            var filter, table, tr, td, i, txtValue, txtValuess = "--trạng thái--";
+            table = document.getElementById("customer_data");
+
+            tr = table.getElementsByTagName("tr");
+            filter = $("#TRANGTHAI option:selected").text().toLowerCase();
+
+            if (filter == txtValuess) {
+                for (i = 0; i < tr.length; i++) {
+                    tr[i].style.display = "";
+                }
+            }
+            else {
+
+
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[10];
+
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+    </script>
+    <script>
+        $("#btnThanhToan").click(function () {
+            changeThanhToan("ThanhToan?id=");
+        });
+        $("#btnChuaThanhToan").click(function () {
+            changeThanhToan("ChuaThanhToan?id=");
+        });
+        
+        function changeThanhToan(url) {
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: url + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == true) {
+                                    $("#tt_" + x).text("Đã thanh toán");
+
+                                }
+                         
+
+                                else {
+                                    $("#tt_" + x).text("Chưa thanh toán");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#TRANGTHAI").change(function () {
+                fillerByStatus()
+            });
+
+
+        });
+    </script>
+    @*check an hien*@
+    <script>
+        $(document).ready(function () {
+            $("#ModalTitle").text("Xóa");
+            //$("#IDLOAITAIKHOAN").change(function () {
+
+            //    fillerBytypeUser()
+            //});
+
+        });
+        //set check all
+        $("#checkall").click(function () {
+
+            $("#customer_data tbody").find('input[class="record"]').each(function () {
+
+                if ($("#checkall").is(":checked")) {
+
+                    $(this).prop('checked', true);
+                }
+                else {
+
+                    $(this).prop('checked', false);
+                }
+            });
+        });
+
+        $("#btngiaohang").click(function () {
+            changeDuyet("ChangeDaDuyet?id=");
+        });
+        //set chờ duyệt
+        $("#btnDaDuyet").click(function () {
+            changeDuyet("ChangeDaDuyet?id=");
+        });
+        $("#btnChoDuyet").click(function () {
+           
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: "ChangeChoDuyet?id=" + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response !=-1 ) {
+                                  
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i> Chờ duyệt");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+        });
+       
+      
+
+        //change duyet
+        function changeDuyet(url) {
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+                        
+                        var x = this.value;
+                        $.ajax({
+                            url: url + x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+
+                                if (response == 5) {
+                                    $("#hd_" + x).html("<i class='fas fa-credit-card'></i> Đang giao");
+
+                                }
+                                else if (response == 2)
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i>Đã duyệt");
+                             
+                                else {
+                                    $("#hd_" + x).html("<i class='far fa-envelope'></i> Chờ duyệt");
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+
+            });
+
+        }
+    </script>
+    <script>
+        //inhoadon
+        $("#btnInDon").click(function () {
+            var kq = true;
+            $("#customer_data tbody input[class='record']").each(function () {
+                if ($(this) != null) {
+
+                    if ($(this).is(":checked")) {
+
+                        var x = this.value;
+                        $.ajax({
+                            url: "Export?id="+ x,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (response) {
+                                if (response.status) {
+                                    kq = response.status;
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    $(this).prop("checked", false);
+                }
+                $("#checkall").prop("checked", false);
+             
+            });
+            if (kq == true) {
+                alert("In hóa đơn thành công!");;
+            }
+            else {
+                alert("In hóa đơn không thành công!");
+            }
+        });
+    
+    </script>
+    <script type="text/javascript">
+
+         //delete fonfim
+        $("#btnDelete").click(function () {
+
+            deletetable();
+
+        });
+        //delete table
+
+        function deletetable() {
+            var kq = false;
+            $("#customer_data tbody").find('input[class="record"]').each(function () {
+                if ($(this) != null) {
+
+
+                     if ($(this).is(":checked")) {
+                        var tmp = $(this);
+                        var va = this.value;
+
+                        $("#DeleteConfim").modal("show");
+                        $("#btnxacnhan").click(function () {
+                            $("#DeleteConfim").modal("hide");
+                            $.ajax({
+                                url: "Delete?id=" + va,
+                                dataType: "json",
+                                type: "POST",
+                                success: function (response) {
+                                    kq = response.status;
+                                   
+                                }
+                            });
+                            $(tmp).parents("tr").remove();
+                        });
+                    }
+
+                }
+
+
+            });
+           
+        }
+
+    </script>
+}
+
